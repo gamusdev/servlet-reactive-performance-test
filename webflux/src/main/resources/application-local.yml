@@ -1,0 +1,18 @@
+server:
+  port : 8090
+
+
+spring:
+  datasource:
+    platform: h2;
+
+  r2dbc:
+    url: "r2dbc:h2:mem:///gamusdev;DB_CLOSE_DELAY=-1"
+#    username: gamusdev
+#    password: dev
+
+#logging:
+#  level:
+#    org: TRACE
+#    com: TRACE
+#    io:  TRACE
