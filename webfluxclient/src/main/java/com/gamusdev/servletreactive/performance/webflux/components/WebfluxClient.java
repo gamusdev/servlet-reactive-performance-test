@@ -3,8 +3,6 @@ package com.gamusdev.servletreactive.performance.webflux.components;
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
