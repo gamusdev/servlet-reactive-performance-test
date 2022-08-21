@@ -22,19 +22,15 @@ public class WebfluxClient {
     private static final String HOST = "http://localhost:8090";
     private static final String BASE_URI = "/api/v1/performance/";
 
-    private static final int counterLimit = 1;
+    private static final int counterLimit = 100;
     private static final AtomicInteger counterGetAll = new AtomicInteger();
     private static final AtomicInteger counterGet = new AtomicInteger();
     private static final AtomicInteger counterPost = new AtomicInteger();
     private static final AtomicInteger counterPut = new AtomicInteger();
     private static final AtomicInteger counterDelete = new AtomicInteger();
 
-    @Autowired
-    private ConfigurableApplicationContext context;
-
     public WebfluxClient() throws InterruptedException {
         executeWebfluxClient();
-        context.close();
     }
 
     private void executeWebfluxClient() throws InterruptedException {
@@ -72,9 +68,8 @@ public class WebfluxClient {
         long end = System.nanoTime();
         log.info("---------------------------------------------------------");
         log.info("Webflux test is finished. Duration=" + (end-start) + " ns");
+        log.info("Webflux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
         log.info("---------------------------------------------------------");
-
-        System.exit(1);
     }
 
     private static void getAllData(WebClient client) {
@@ -124,23 +119,25 @@ public class WebfluxClient {
 
     private static void postData(WebClient client) {
         log.info("---> POST");
-        Mono<Data> result = client.post().uri(BASE_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(Data.builder().data(
-                        RandomStringUtils.randomAlphanumeric(10)
-                ).build()), Data.class)
-                .exchangeToMono(response -> {
-                    counterPost.incrementAndGet();
-                    if (response.statusCode().equals(HttpStatus.CREATED)) {
-                        return response.bodyToMono(Data.class);
-                    } else {
-                        log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
-                        throw new RuntimeException( "General error" );
-                    }
-                });
 
-        result.subscribe( d -> log.info("---> POST id=" +d.getId()+" data=" + d.getData()));
+        IntStream.rangeClosed(1, counterLimit).forEach( i -> {
+            Mono<Data> result = client.post().uri(BASE_URI)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(Mono.just(Data.builder().data(
+                            RandomStringUtils.randomAlphanumeric(10)
+                    ).build()), Data.class)
+                    .exchangeToMono(response -> {
+                        counterPost.incrementAndGet();
+                        if (response.statusCode().equals(HttpStatus.CREATED)) {
+                            return response.bodyToMono(Data.class);
+                        } else {
+                            log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
+                            throw new RuntimeException( "General error" );
+                        }
+                    });
+            result.subscribe( d -> log.info("---> POST id=" +d.getId()+" data=" + d.getData()));
+        });
         log.info("---> END POST");
     }
 
