@@ -63,7 +63,12 @@ public class DataService implements IDataService {
      */
     public Mono<Data> updateById(final Integer id, final Data newData ) {
         return dataRepository.findById(id)
-                .flatMap(dataRepository::save);
+                .flatMap(old -> dataRepository.save(
+                        Data.builder()
+                                .id(old.getId())
+                                .data(newData.getData())
+                                .build()
+                ));
     }
 
     /**
