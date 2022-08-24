@@ -3,3 +3,5 @@ logging:
     io: INFO
     reactor: INFO
     org: INFO
+    com:
+      gamusdev: DEBUG

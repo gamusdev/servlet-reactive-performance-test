@@ -6,11 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/performance")
@@ -96,9 +100,11 @@ public class PerformanceController {
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Data>> updateById(
             @PathVariable Integer id, @RequestBody final Data data) {
+        final long startNs = System.nanoTime();
         return dataService.updateById(id, data)
                 .map(p-> ResponseEntity
                         .created(URI.create("/".concat(p.getId().toString())))
+                        .header("duration", (System.nanoTime() - startNs) + "")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(p)
                 )
@@ -124,7 +130,10 @@ public class PerformanceController {
      */
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteById(@PathVariable final Integer id) {
+        final long startNs = System.nanoTime();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("duration", (System.nanoTime() - startNs) + "");
         return dataService.delete(id)
-                .then(Mono.just(new ResponseEntity<>(HttpStatus.NO_CONTENT)));
+                .then(Mono.just(new ResponseEntity<>(headers, HttpStatus.NO_CONTENT)));
     }
 }
