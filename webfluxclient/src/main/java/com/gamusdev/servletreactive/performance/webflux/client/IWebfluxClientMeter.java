@@ -1,6 +1,6 @@
 package com.gamusdev.servletreactive.performance.webflux.client;
 
-public interface IWebfluxClient {
+public interface IWebfluxClientMeter {
     void getAllData();
     void getData();
     void postData();

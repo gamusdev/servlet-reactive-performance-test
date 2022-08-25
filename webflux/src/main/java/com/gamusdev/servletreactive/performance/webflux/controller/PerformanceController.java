@@ -22,6 +22,7 @@ import java.util.Map;
 public class PerformanceController {
 
     private static final String CONTROLLER_URI = "/api/v1/performance/";
+    private static final String DURATION = "duration";
 
     /**
      * PerformanceService
@@ -42,7 +43,7 @@ public class PerformanceController {
         return Mono.just(
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("duration", (System.nanoTime() - startNs) + "")
+                        .header(DURATION, (System.nanoTime() - startNs) + "")
                         .body(allData)
         );
     }
@@ -53,7 +54,7 @@ public class PerformanceController {
         return this.dataService.getDataById(id)
                 .map ( p -> ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("duration", (System.nanoTime() - startNs) + "")
+                        .header(DURATION, (System.nanoTime() - startNs) + "")
                         .body( Mono.just(p)) )
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -65,7 +66,7 @@ public class PerformanceController {
                 .map(p-> ResponseEntity
                         .created(URI.create(CONTROLLER_URI.concat(p.getId().toString())))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("duration", (System.nanoTime() - startNs) + "")
+                        .header(DURATION, (System.nanoTime() - startNs) + "")
                         .body(p)
                 );
     }
@@ -104,7 +105,7 @@ public class PerformanceController {
         return dataService.updateById(id, data)
                 .map(p-> ResponseEntity
                         .created(URI.create("/".concat(p.getId().toString())))
-                        .header("duration", (System.nanoTime() - startNs) + "")
+                        .header(DURATION, (System.nanoTime() - startNs) + "")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(p)
                 )
@@ -132,7 +133,7 @@ public class PerformanceController {
     public Mono<ResponseEntity<Void>> deleteById(@PathVariable final Integer id) {
         final long startNs = System.nanoTime();
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("duration", (System.nanoTime() - startNs) + "");
+        headers.add(DURATION, (System.nanoTime() - startNs) + "");
         return dataService.delete(id)
                 .then(Mono.just(new ResponseEntity<>(headers, HttpStatus.NO_CONTENT)));
     }
