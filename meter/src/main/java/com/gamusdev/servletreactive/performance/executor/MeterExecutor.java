@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Supplier;
+
 @Service
 @Slf4j
 public class MeterExecutor implements IMeterExecutor{
@@ -30,34 +32,30 @@ public class MeterExecutor implements IMeterExecutor{
         long start = System.nanoTime();
 
         client.postData();
-        while(client.getCounterPost() < counterLimit) {
-            Thread.sleep(100);
-        }
+        activeWaiting( client::getCounterPost, counterLimit);
 
         client.getAllData();
-        while(client.getCounterGetAll() < 1) {
-            Thread.sleep(100);
-        }
+        activeWaiting(client::getCounterGetAll, 1);
 
         client.putData();
-        while(client.getCounterPut() < counterLimit) {
-            Thread.sleep(100);
-        }
+        activeWaiting(client::getCounterPut, counterLimit);
 
         client.getData();
-        while(client.getCounterGet() < counterLimit) {
-            Thread.sleep(100);
-        }
+        activeWaiting(client::getCounterGet, counterLimit);
 
         client.deleteData();
-        while(client.getCounterDelete() < counterLimit) {
-            Thread.sleep(100);
-        }
+        activeWaiting(client::getCounterDelete, counterLimit);
 
         long end = System.nanoTime();
         log.info("---------------------------------------------------------");
         log.info("Webflux test is finished. Duration=" + (end-start) + " ns");
         log.info("Webflux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
         log.info("---------------------------------------------------------");
+    }
+
+    private void activeWaiting(final Supplier<Integer> counter, final int limit) throws InterruptedException {
+        while(counter.get() < limit) {
+            Thread.sleep(100);
+        }
     }
 }
