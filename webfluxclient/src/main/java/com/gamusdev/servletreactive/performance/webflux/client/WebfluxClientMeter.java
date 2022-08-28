@@ -46,6 +46,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         return instance;
     }
 
+    @Override
     public void getAllData() {
         log.debug("---> GETALL");
         Flux<Data> dataFlux = client.get()
@@ -67,6 +68,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         log.debug("---> END GETALL");
     }
 
+    @Override
     public void getData() {
         log.debug("---> GET");
         IntStream.rangeClosed(1, counterLimit).forEach(i -> {
@@ -89,6 +91,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         log.debug("---> END GET");
     }
 
+    @Override
     public void postData() {
         log.debug("---> POST");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
@@ -113,6 +116,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         log.debug("---> END POST");
     }
 
+    @Override
     public void putData() {
         log.debug("---> PUT");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
@@ -138,6 +142,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         log.debug("---> END PUT");
     }
 
+    @Override
     public void deleteData() {
         log.debug("---> DELETE");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
@@ -158,18 +163,23 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
         });
         log.debug("---> END DELETE");
     }
+    @Override
     public int getCounterGetAll() {
         return counterGetAll.get();
     }
+    @Override
     public int getCounterGet() {
         return counterGet.get();
     }
+    @Override
     public int getCounterPost() {
         return counterPost.get();
     }
+    @Override
     public int getCounterPut() {
         return counterPut.get();
     }
+    @Override
     public int getCounterDelete() {
         return counterDelete.get();
     }
