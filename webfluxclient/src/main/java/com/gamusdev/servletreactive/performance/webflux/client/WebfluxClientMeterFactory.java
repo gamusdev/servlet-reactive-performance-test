@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WebfluxClientMeterFactory implements IWebfluxClientMeterFactory {
     public IWebfluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
-        return WebfluxClientMeterMeter.getInstance( host, baseUri, counterLimit );
+        return WebfluxClientMeter.getInstance( host, baseUri, counterLimit );
     }
 }

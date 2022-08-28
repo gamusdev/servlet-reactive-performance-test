@@ -9,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @Slf4j
-public class WebfluxClientTest {
+public class WebfluxClientPerformance {
 
     private static final String HOST = "http://localhost:8090";
     private static final String BASE_URI = "/api/v1/performance/";
@@ -18,7 +18,7 @@ public class WebfluxClientTest {
     private static final int counterLimit = 100;
 
     public static void main(String[] args) throws InterruptedException {
-        ConfigurableApplicationContext context = SpringApplication.run(WebfluxClientTest.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(WebfluxClientPerformance.class, args);
 
         IWebfluxClientMeterFactory factory = (IWebfluxClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
         executeWebfluxClient(factory.getInstance(HOST, BASE_URI, counterLimit));

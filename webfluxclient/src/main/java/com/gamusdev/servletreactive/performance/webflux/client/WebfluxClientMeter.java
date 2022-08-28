@@ -16,9 +16,9 @@ import java.util.stream.IntStream;
 // TODO Add support to a MAP to collect all data results
 // TODO Or return a performance meter with all the times, and not only the body
     // TODO Or return an enrich object, with body and headers
-class WebfluxClientMeterMeter implements IWebfluxClientMeter {
+class WebfluxClientMeter implements IWebfluxClientMeter {
 
-    private static WebfluxClientMeterMeter instance;
+    private static WebfluxClientMeter instance;
 
     private WebClient client;
     private String baseUri;
@@ -30,10 +30,10 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
     private static final AtomicInteger counterPut = new AtomicInteger();
     private static final AtomicInteger counterDelete = new AtomicInteger();
 
-    private WebfluxClientMeterMeter() {
+    private WebfluxClientMeter() {
 
     }
-    private WebfluxClientMeterMeter(final String host, final String baseUri, final int counterLimit) {
+    private WebfluxClientMeter(final String host, final String baseUri, final int counterLimit) {
         this.client = WebClient.create( host );
         this.baseUri = baseUri;
         this.counterLimit = counterLimit;
@@ -41,7 +41,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
 
     static IWebfluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
         if (instance == null) {
-            instance = new WebfluxClientMeterMeter(host, baseUri, counterLimit);
+            instance = new WebfluxClientMeter(host, baseUri, counterLimit);
         }
         return instance;
     }
@@ -53,7 +53,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
                 .exchangeToFlux(response -> {
                     counterGetAll.incrementAndGet();
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        log.info("GETALL duration=" + response.headers().header("duration").get(0));
+                        //log.info("GETALL duration=" + response.headers().header("duration").get(0));
                         return response.bodyToFlux(Data.class);
                     } else {
                         log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
@@ -75,7 +75,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
                     .exchangeToFlux(response -> {
                         counterGet.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.OK)) {
-                            log.info("GET duration=" + response.headers().header("duration").get(0));
+                            //log.info("GET duration=" + response.headers().header("duration").get(0));
                             return response.bodyToFlux(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
@@ -101,7 +101,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
                     .exchangeToMono(response -> {
                         counterPost.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
-                            log.info("POST duration=" + response.headers().header("duration").get(0));
+                            //log.info("POST duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
@@ -126,7 +126,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
                     .exchangeToMono(response -> {
                         counterPut.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
-                            log.info("PUT duration=" + response.headers().header("duration").get(0));
+                            //log.info("PUT duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code=" + response.statusCode());
@@ -147,7 +147,7 @@ class WebfluxClientMeterMeter implements IWebfluxClientMeter {
                     .exchangeToMono(response -> {
                         counterDelete.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.NO_CONTENT)) {
-                            log.info("DELETE duration=" + response.headers().header("duration").get(0));
+                            //log.info("DELETE duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
