@@ -1,5 +1,6 @@
 package com.gamusdev.servletreactive.performance.executor;
 
+import com.gamusdev.servletreactive.performance.data.DataManager;
 import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeter;
 import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +26,17 @@ public class MeterExecutor implements IMeterExecutor{
     @Autowired
     private IWebfluxClientMeterFactory factory;
 
+    @Autowired
+    private DataManager dataManager;
+
     @Override
     public void execute() throws InterruptedException {
         IWebfluxClientMeter client = factory.getInstance(host, baseUri, counterLimit);
         log.info("Starting Webflux test...");
         long start = System.nanoTime();
 
-        client.postData();
+        //client.postData();
+        client.postDataWithRecords(dataManager::insertPostDuration);
         activeWaiting( client::getCounterPost, counterLimit);
 
         client.getAllData();
@@ -48,9 +53,10 @@ public class MeterExecutor implements IMeterExecutor{
 
         long end = System.nanoTime();
         log.info("---------------------------------------------------------");
-        log.info("Webflux test is finished. Duration=" + (end-start) + " ns");
+        log.info("Webflux test is finished. Duration  (nanoseconds)=" + (end-start) + " ns");
         log.info("Webflux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
         log.info("---------------------------------------------------------");
+        dataManager.printPostInfo();
     }
 
     private void activeWaiting(final Supplier<Integer> counter, final int limit) throws InterruptedException {

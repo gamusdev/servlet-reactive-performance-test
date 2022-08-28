@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -54,6 +55,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
                 .exchangeToFlux(response -> {
                     counterGetAll.incrementAndGet();
                     if (response.statusCode().equals(HttpStatus.OK)) {
+                        //TODO Adaptar DataManager para GetAll
                         //log.info("GETALL duration=" + response.headers().header("duration").get(0));
                         return response.bodyToFlux(Data.class);
                     } else {
@@ -104,6 +106,36 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
                     .exchangeToMono(response -> {
                         counterPost.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
+                            //log.info("POST duration=" + response.headers().header("duration").get(0));
+                            return response.bodyToMono(Data.class);
+                        } else {
+                            log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
+                            throw new RuntimeException( "General error" );
+                        }
+                    });
+            result.subscribe( d -> log.debug("---> POST id=" +d.getId()+" data=" + d.getData()));
+        });
+        log.debug("---> END POST");
+    }
+
+    @Override
+    public void postDataWithRecords(Consumer<Integer> consumer) {
+        log.debug("---> POST");
+        IntStream.rangeClosed(1, counterLimit).forEach( i -> {
+            Mono<Data> result = client.post().uri(baseUri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(Mono.just(Data.builder().data(
+                            RandomStringUtils.randomAlphanumeric(10)
+                    ).build()), Data.class)
+                    .exchangeToMono(response -> {
+                        counterPost.incrementAndGet();
+                        if (response.statusCode().equals(HttpStatus.CREATED)) {
+
+                            //String aux1 = response.headers().header("duration").get(0);
+                            //Integer aux2 = Integer.getInteger(response.headers().header("duration").get(0));
+                            consumer.accept( Integer.parseInt(response.headers().header("duration").get(0)));
+
                             //log.info("POST duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
                         } else {
