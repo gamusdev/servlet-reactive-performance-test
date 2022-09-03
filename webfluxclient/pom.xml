@@ -83,6 +83,16 @@
 						</exclude>
 					</excludes>
 				</configuration>
+				<!-- https://stackoverflow.com/questions/40089443/how-to-add-a-dependency-to-a-spring-boot-jar-in-another-project-->
+				<!-- repackage is necessary to be able to use this jar as dependency in other projects-->
+				<executions>
+					<execution>
+						<id>repackage</id>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
