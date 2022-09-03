@@ -57,8 +57,8 @@ public class WebFluxClientPerformance {
 
         long end = System.nanoTime();
         log.info("---------------------------------------------------------");
-        log.info("WebFlux test is finished. Duration=" + (end-start) + " ns");
-        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
+        //log.info("WebFlux test is finished. Duration=" + (end-start) + " ns");
+        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000 + " ms");
         log.info("---------------------------------------------------------");
     }
 

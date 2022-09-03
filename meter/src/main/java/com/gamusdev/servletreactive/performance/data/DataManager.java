@@ -94,6 +94,8 @@ public class DataManager implements IDataManager{
         long numRequests = methodMetric.size();
         log.info(method + TOTAL_NUMBER_REQUEST +  numRequests);
 
+        // totalDuration is the sum of the duration of all the request. Remember that the requests executes concurrently,
+        // so, this sum will be bigger than the duration of the test.
         double totalDuration = methodMetric.stream().mapToLong(v -> (long) v).sum();
         //log.info(method + TOTAL_DURATION + " (nanoseconds):" + totalDuration + " ns, ");
         log.info(method + TOTAL_DURATION + " (miliseconds):" + totalDuration / NS_TO_MS + " ms");
