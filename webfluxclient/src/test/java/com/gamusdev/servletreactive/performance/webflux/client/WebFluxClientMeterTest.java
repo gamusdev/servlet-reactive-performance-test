@@ -8,18 +8,22 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+
+import static org.mockito.ArgumentMatchers.any;
 
 
 /**
- * Integration test for WebfluxClientMeter
+ * Integration test for WebFluxClientMeter
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(SpringExtension.class)
-public class WebfluxClientMeterTest {
+public class WebFluxClientMeterTest {
     private static final String HOST ="http://localhost";
 
     private static final String BASE_URI = "/";
@@ -28,7 +32,7 @@ public class WebfluxClientMeterTest {
 
     private static MockWebServer mockBackEnd;
 
-    private static IWebfluxClientMeter client;
+    private static IWebFluxClientMeter client;
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -38,7 +42,7 @@ public class WebfluxClientMeterTest {
         int port = mockBackEnd.getPort();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        client = WebfluxClientMeter
+        client = WebFluxClientMeter
                 .getInstance(HOST + ":" + port, BASE_URI, COUNTER_LIMIT);
     }
 
@@ -52,7 +56,8 @@ public class WebfluxClientMeterTest {
         mockBackEnd.enqueue(new MockResponse()
                 .setResponseCode(HttpStatus.OK.value())
                 .setBody(objectMapper.writeValueAsString(new Data()))
-                .addHeader("Content-Type", "application/json"));
+                .addHeader("Content-Type", "application/json")
+                .addHeader("duration", "1"));
     }
 
     private void prepareTestCreated() throws JsonProcessingException {
@@ -60,7 +65,8 @@ public class WebfluxClientMeterTest {
         mockBackEnd.enqueue(new MockResponse()
                 .setResponseCode(HttpStatus.CREATED.value())
                 .setBody(objectMapper.writeValueAsString(new Data()))
-                .addHeader("Content-Type", "application/json"));
+                .addHeader("Content-Type", "application/json")
+                .addHeader("duration", "1"));
     }
 
     private void prepareTestNoContent() throws JsonProcessingException {
@@ -68,7 +74,8 @@ public class WebfluxClientMeterTest {
         mockBackEnd.enqueue(new MockResponse()
                 .setResponseCode(HttpStatus.NO_CONTENT.value())
                 .setBody(objectMapper.writeValueAsString(new Data()))
-                .addHeader("Content-Type", "application/json"));
+                .addHeader("Content-Type", "application/json")
+                .addHeader("duration", "1"));
     }
 
     private void prepareTestKO() throws JsonProcessingException {
@@ -95,9 +102,12 @@ public class WebfluxClientMeterTest {
     @Test
     @Order(2)
     public void getData() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestOK();
-        client.getData();
+        client.getData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -106,14 +116,19 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("GET", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        Mockito.verify(consumer).accept(any());
     }
 
     @Test
     @Order(3)
     public void postData() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestCreated();
-        client.postData();
+        client.postData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -122,14 +137,19 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("POST", recordedRequest.getMethod());
         Assertions.assertEquals("/", recordedRequest.getPath());
+
+        Mockito.verify(consumer).accept(any());
     }
 
     @Test
     @Order(4)
     public void postPut() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestCreated();
-        client.putData();
+        client.putData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -138,14 +158,19 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("PUT", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        Mockito.verify(consumer).accept(any());
     }
 
     @Test
     @Order(5)
     public void postDelete() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestNoContent();
-        client.deleteData();
+        client.deleteData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -154,6 +179,8 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("DELETE", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        Mockito.verify(consumer).accept(any());
     }
 
     @Test
@@ -174,9 +201,12 @@ public class WebfluxClientMeterTest {
     @Test
     @Order(7)
     public void getDataKO() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestKO();
-        client.getData();
+        client.getData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -185,14 +215,20 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("GET", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        // Assert that the consumer is not called
+        Mockito.verify(consumer, Mockito.times(0)).accept(any());
     }
 
     @Test
     @Order(8)
     public void postDataKO() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestKO();
-        client.postData();
+        client.postData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -201,14 +237,20 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("POST", recordedRequest.getMethod());
         Assertions.assertEquals("/", recordedRequest.getPath());
+
+        // Assert that the consumer is not called
+        Mockito.verify(consumer, Mockito.times(0)).accept(any());
     }
 
     @Test
     @Order(9)
     public void postPutKO() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestKO();
-        client.putData();
+        client.putData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -217,14 +259,20 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("PUT", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        // Assert that the consumer is not called
+        Mockito.verify(consumer, Mockito.times(0)).accept(any());
     }
 
     @Test
     @Order(10)
     public void postDeleteKO() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestKO();
-        client.deleteData();
+        client.deleteData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -233,6 +281,9 @@ public class WebfluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("DELETE", recordedRequest.getMethod());
         Assertions.assertEquals("/1", recordedRequest.getPath());
+
+        // Assert that the consumer is not called
+        Mockito.verify(consumer, Mockito.times(0)).accept(any());
     }
 
     /**
@@ -241,9 +292,9 @@ public class WebfluxClientMeterTest {
     @Test
     @Order(1000)
     public void getInstance() {
-        IWebfluxClientMeter client1 = WebfluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
-        IWebfluxClientMeter client2 = WebfluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
-        IWebfluxClientMeter client3 = WebfluxClientMeter.getInstance("HOST", "BASE_URI", 0);
+        IWebFluxClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
+        IWebFluxClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
+        IWebFluxClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0);
 
         Assertions.assertTrue(client1 == client2);
         Assertions.assertTrue(client1 == client3);

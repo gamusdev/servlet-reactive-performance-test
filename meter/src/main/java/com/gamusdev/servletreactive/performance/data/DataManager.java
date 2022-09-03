@@ -12,7 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DataManager implements IDataManager{
 
-    Map<HttpMethod, ArrayDeque> metrics;
+    private static String TOTAL_NUMBER_REQUEST = "-> Total number of Requests:";
+    private static String TOTAL_DURATION = "-> Total duration";
+    private static String MEAN_DURATION = "-> Mean duration of the requests";
+    private static int NS_TO_MS = 1_000_000;
+
+    Map<HttpMethod, ArrayDeque<Long>> metrics;
 
     DataManager() {
         metrics = new ConcurrentHashMap();
@@ -22,25 +27,86 @@ public class DataManager implements IDataManager{
         metrics.put(HttpMethod.DELETE, new ArrayDeque());
     }
 
-    @Override
-    public void insertDuration(HttpMethod httpMethod, Integer duration) {
+    synchronized private void insertDuration(HttpMethod httpMethod, Long duration) {
         metrics.get(httpMethod).add(duration);
     }
 
     @Override
-    public void insertPostDuration(Integer duration) {
+    public void insertPostDuration(Long duration) {
         metrics.get(HttpMethod.POST).add(duration);
     }
 
     @Override
+    public void insertPutDuration(Long duration){
+        metrics.get(HttpMethod.PUT).add(duration);
+    }
+
+    @Override
+    public void insertGetDuration(Long duration){
+        metrics.get(HttpMethod.GET).add(duration);
+    }
+
+    @Override
+    public void insertDeleteDuration(Long duration){
+        metrics.get(HttpMethod.DELETE).add(duration);
+    }
+
+    @Override
     public void printPostInfo() {
-        int numPosts = metrics.get(HttpMethod.POST).size();
+        printInfo(HttpMethod.POST);
+    }
+
+    @Override
+    public void printPutInfo() {
+        printInfo(HttpMethod.PUT);
+    }
+
+    @Override
+    public void printGetInfo() {
+        printInfo(HttpMethod.GET);
+    }
+
+    @Override
+    public void printDeleteInfo() {
+        printInfo(HttpMethod.DELETE);
+    }
+
+    @Override
+    public void printMeanInfo() {
         // TODO para 100 Posts, el contador desborda!
-        long totalPostDuration = metrics.get(HttpMethod.POST).stream().mapToInt(v -> (int) v).sum();
-        log.info("Number of Post Requests:" +  numPosts);
-        log.info("Posts total duration (nanoseconds):" + totalPostDuration + " ns, ");
-        log.info("Mean duration (nanoseconds):" + totalPostDuration / numPosts + " ns");
-        log.info("Minimum duration (nanoseconds):" + metrics.get(HttpMethod.POST).stream().mapToInt(v -> (int) v).min().getAsInt() + "ns");
-        log.info("Maximum duration (nanoseconds):" + metrics.get(HttpMethod.POST).stream().mapToInt(v -> (int) v).max().getAsInt() + "ns");
+        log.info("----------------- Glocal Metrics:");
+
+        long numRequests = metrics.values().stream().mapToLong(ArrayDeque::size).sum();
+        log.info(TOTAL_NUMBER_REQUEST + numRequests);
+
+        double totalDuration = metrics.values().stream().flatMapToLong(v -> v.stream().mapToLong( i -> i)).sum();
+        //log.info(TOTAL_DURATION + " (nanoseconds):" + totalDuration + " ns, ");
+        log.info(TOTAL_DURATION + " (miliseconds):" + totalDuration/NS_TO_MS + " ms");
+
+        //log.info(MEAN_DURATION + " (nanoseconds):" + totalDuration / numRequests + " ns");
+        log.info(MEAN_DURATION + " (miliseconds):" + (totalDuration / numRequests) /NS_TO_MS + " ms");
+    }
+
+    private void printInfo(HttpMethod method) {
+        // TODO para 100 Posts, el contador desborda!
+        log.info("----------------- Metrics:" + method);
+        ArrayDeque methodMetric = metrics.get( method );
+        long numRequests = methodMetric.size();
+        log.info(method + TOTAL_NUMBER_REQUEST +  numRequests);
+
+        double totalDuration = methodMetric.stream().mapToLong(v -> (long) v).sum();
+        //log.info(method + TOTAL_DURATION + " (nanoseconds):" + totalDuration + " ns, ");
+        log.info(method + TOTAL_DURATION + " (miliseconds):" + totalDuration / NS_TO_MS + " ms");
+
+        //log.info(method + MEAN_DURATION + " (nanoseconds):" + totalDuration / numRequests + " ns");
+        log.info(method + MEAN_DURATION + " (miliseconds):" + (totalDuration / numRequests) / NS_TO_MS + " ms");
+
+        //log.info(method + " minimum duration (nanoseconds):" + methodMetric.stream().mapToLong(v -> (long) v).min().getAsLong() + "ns");
+        log.info(method + " minimum duration (miliseconds):" +
+                methodMetric.stream().mapToLong(v -> (long) v).min().getAsLong() / NS_TO_MS + " ms");
+
+        //log.info(method + " maximum duration (nanoseconds):" + methodMetric.stream().mapToLong(v -> (long) v).max().getAsLong() + "ns");
+        log.info(method + " maximum duration (miliseconds):" +
+                methodMetric.stream().mapToLong(v -> (long) v).max().getAsLong() / NS_TO_MS + " ms");
     }
 }

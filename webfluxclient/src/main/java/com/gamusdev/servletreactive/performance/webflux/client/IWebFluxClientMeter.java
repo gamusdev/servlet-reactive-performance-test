@@ -2,19 +2,15 @@ package com.gamusdev.servletreactive.performance.webflux.client;
 
 import java.util.function.Consumer;
 
-public interface IWebfluxClientMeter {
+public interface IWebFluxClientMeter {
     void getAllData();
-    void getData();
-    void postData();
-    void putData();
-    void deleteData();
+    void getData(Consumer<Long> consumer);
+    void postData(Consumer<Long> consumer);
+    void putData(Consumer<Long> consumer);
+    void deleteData(Consumer<Long> consumer);
     int getCounterGetAll();
     int getCounterGet();
     int getCounterPost();
     int getCounterPut();
     int getCounterDelete();
-
-
-
-    void postDataWithRecords(Consumer<Integer> consumer);
 }

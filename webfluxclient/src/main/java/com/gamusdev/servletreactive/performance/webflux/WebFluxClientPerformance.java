@@ -1,7 +1,7 @@
 package com.gamusdev.servletreactive.performance.webflux;
 
-import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeterFactory;
+import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeter;
+import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @Slf4j
-public class WebfluxClientPerformance {
+public class WebFluxClientPerformance {
 
     private static final String HOST = "http://localhost:8090";
     private static final String BASE_URI = "/api/v1/performance/";
@@ -18,19 +18,19 @@ public class WebfluxClientPerformance {
     private static final int counterLimit = 100;
 
     public static void main(String[] args) throws InterruptedException {
-        ConfigurableApplicationContext context = SpringApplication.run(WebfluxClientPerformance.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(WebFluxClientPerformance.class, args);
 
-        IWebfluxClientMeterFactory factory = (IWebfluxClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
-        executeWebfluxClient(factory.getInstance(HOST, BASE_URI, counterLimit));
+        IWebFluxClientMeterFactory factory = (IWebFluxClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
+        executeWebFluxClient(factory.getInstance(HOST, BASE_URI, counterLimit));
 
         context.close();
     }
 
-    private static void executeWebfluxClient(IWebfluxClientMeter client) throws InterruptedException {
-        log.info("Starting Webflux test...");
+    private static void executeWebFluxClient(IWebFluxClientMeter client) throws InterruptedException {
+        log.info("Starting WebFlux test...");
         long start = System.nanoTime();
 
-        client.postData();
+        client.postData(d -> log.info(d.toString()));
         while(client.getCounterPost() < counterLimit) {
             Thread.sleep(100);
         }
@@ -40,25 +40,25 @@ public class WebfluxClientPerformance {
             Thread.sleep(100);
         }
 
-        client.putData();
+        client.putData(d -> log.info(d.toString()));
         while(client.getCounterPut() < counterLimit) {
             Thread.sleep(100);
         }
 
-        client.getData();
+        client.getData(d -> log.info(d.toString()));
         while(client.getCounterGet() < counterLimit) {
             Thread.sleep(100);
         }
 
-        client.deleteData();
+        client.deleteData(d -> log.info(d.toString()));
         while(client.getCounterDelete() < counterLimit) {
             Thread.sleep(100);
         }
 
         long end = System.nanoTime();
         log.info("---------------------------------------------------------");
-        log.info("Webflux test is finished. Duration=" + (end-start) + " ns");
-        log.info("Webflux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
+        log.info("WebFlux test is finished. Duration=" + (end-start) + " ns");
+        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
         log.info("---------------------------------------------------------");
     }
 

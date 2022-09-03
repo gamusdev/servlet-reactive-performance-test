@@ -17,9 +17,11 @@ import java.util.stream.IntStream;
 // TODO Add support to a MAP to collect all data results
 // TODO Or return a performance meter with all the times, and not only the body
     // TODO Or return an enrich object, with body and headers
-class WebfluxClientMeter implements IWebfluxClientMeter {
 
-    private static WebfluxClientMeter instance;
+    //TODO Quitar la header duration y ponerla como parametro en la api
+class WebFluxClientMeter implements IWebFluxClientMeter {
+
+    private static WebFluxClientMeter instance;
 
     private WebClient client;
     private String baseUri;
@@ -31,18 +33,18 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
     private static final AtomicInteger counterPut = new AtomicInteger();
     private static final AtomicInteger counterDelete = new AtomicInteger();
 
-    private WebfluxClientMeter() {
+    private WebFluxClientMeter() {
 
     }
-    private WebfluxClientMeter(final String host, final String baseUri, final int counterLimit) {
+    private WebFluxClientMeter(final String host, final String baseUri, final int counterLimit) {
         this.client = WebClient.create( host );
         this.baseUri = baseUri;
         this.counterLimit = counterLimit;
     }
 
-    static IWebfluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
+    static IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
         if (instance == null) {
-            instance = new WebfluxClientMeter(host, baseUri, counterLimit);
+            instance = new WebFluxClientMeter(host, baseUri, counterLimit);
         }
         return instance;
     }
@@ -71,7 +73,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
     }
 
     @Override
-    public void getData() {
+    public void getData(Consumer<Long> consumer) {
         log.debug("---> GET");
         IntStream.rangeClosed(1, counterLimit).forEach(i -> {
             Flux<Data> dataFlux = client.get()
@@ -80,6 +82,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
                         counterGet.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.OK)) {
                             //log.info("GET duration=" + response.headers().header("duration").get(0));
+                            consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToFlux(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
@@ -94,32 +97,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
     }
 
     @Override
-    public void postData() {
-        log.debug("---> POST");
-        IntStream.rangeClosed(1, counterLimit).forEach( i -> {
-            Mono<Data> result = client.post().uri(baseUri)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(Data.builder().data(
-                            RandomStringUtils.randomAlphanumeric(10)
-                    ).build()), Data.class)
-                    .exchangeToMono(response -> {
-                        counterPost.incrementAndGet();
-                        if (response.statusCode().equals(HttpStatus.CREATED)) {
-                            //log.info("POST duration=" + response.headers().header("duration").get(0));
-                            return response.bodyToMono(Data.class);
-                        } else {
-                            log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
-                            throw new RuntimeException( "General error" );
-                        }
-                    });
-            result.subscribe( d -> log.debug("---> POST id=" +d.getId()+" data=" + d.getData()));
-        });
-        log.debug("---> END POST");
-    }
-
-    @Override
-    public void postDataWithRecords(Consumer<Integer> consumer) {
+    public void postData(Consumer<Long> consumer) {
         log.debug("---> POST");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.post().uri(baseUri)
@@ -134,7 +112,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
 
                             //String aux1 = response.headers().header("duration").get(0);
                             //Integer aux2 = Integer.getInteger(response.headers().header("duration").get(0));
-                            consumer.accept( Integer.parseInt(response.headers().header("duration").get(0)));
+                            consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
 
                             //log.info("POST duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
@@ -149,7 +127,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
     }
 
     @Override
-    public void putData() {
+    public void putData(Consumer<Long> consumer) {
         log.debug("---> PUT");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.put().uri(baseUri+ i)
@@ -163,6 +141,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
                         counterPut.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
                             //log.info("PUT duration=" + response.headers().header("duration").get(0));
+                            consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToMono(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code=" + response.statusCode());
@@ -175,7 +154,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
     }
 
     @Override
-    public void deleteData() {
+    public void deleteData(Consumer<Long> consumer) {
         log.debug("---> DELETE");
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.delete()
@@ -185,6 +164,7 @@ class WebfluxClientMeter implements IWebfluxClientMeter {
                         counterDelete.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.NO_CONTENT)) {
                             //log.info("DELETE duration=" + response.headers().header("duration").get(0));
+                            consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToMono(Data.class);
                         } else {
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());

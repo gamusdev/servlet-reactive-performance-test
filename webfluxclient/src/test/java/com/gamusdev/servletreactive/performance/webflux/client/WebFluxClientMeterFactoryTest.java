@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class WebfluxClientMeterFactoryTest {
+public class WebFluxClientMeterFactoryTest {
 
     private static final String HOST ="host";
 
@@ -19,21 +19,21 @@ public class WebfluxClientMeterFactoryTest {
     private static final int COUNTER_LIMIT = 0;
 
     @Mock
-    private IWebfluxClientMeter clientMeter;
+    private IWebFluxClientMeter clientMeter;
 
     @InjectMocks
-    private WebfluxClientMeterFactory factory;
+    private WebFluxClientMeterFactory factory;
 
     @Test
     public void getInstance() {
 
         // Prepare static mocks
-        try (MockedStatic<WebfluxClientMeter> utilities = Mockito.mockStatic(WebfluxClientMeter.class)) {
+        try (MockedStatic<WebFluxClientMeter> utilities = Mockito.mockStatic(WebFluxClientMeter.class)) {
             // When
-            utilities.when(() -> WebfluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT))
+            utilities.when(() -> WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT))
                     .thenReturn( clientMeter );
             // Then
-            IWebfluxClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
+            IWebFluxClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
 
             // Verify
             Assertions.assertThat(clientMeter).isEqualTo(result);

@@ -12,7 +12,7 @@
 	<artifactId>webflux</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>webflux</name>
-	<description>Webflux Server</description>
+	<description>WebFlux Server</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

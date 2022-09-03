@@ -1,8 +1,8 @@
 package com.gamusdev.servletreactive.performance.executor;
 
 import com.gamusdev.servletreactive.performance.data.DataManager;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebfluxClientMeterFactory;
+import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeter;
+import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,39 +24,46 @@ public class MeterExecutor implements IMeterExecutor{
     private int counterLimit;
 
     @Autowired
-    private IWebfluxClientMeterFactory factory;
+    private IWebFluxClientMeterFactory factory;
 
     @Autowired
     private DataManager dataManager;
 
     @Override
     public void execute() throws InterruptedException {
-        IWebfluxClientMeter client = factory.getInstance(host, baseUri, counterLimit);
-        log.info("Starting Webflux test...");
+        IWebFluxClientMeter client = factory.getInstance(host, baseUri, counterLimit);
+        log.info("Starting WebFlux test...");
         long start = System.nanoTime();
 
         //client.postData();
-        client.postDataWithRecords(dataManager::insertPostDuration);
+        client.postData(dataManager::insertPostDuration);
         activeWaiting( client::getCounterPost, counterLimit);
 
         client.getAllData();
         activeWaiting(client::getCounterGetAll, 1);
 
-        client.putData();
+        client.putData(dataManager::insertPutDuration);
         activeWaiting(client::getCounterPut, counterLimit);
 
-        client.getData();
+        client.getData(dataManager::insertGetDuration);
         activeWaiting(client::getCounterGet, counterLimit);
 
-        client.deleteData();
+        client.deleteData(dataManager::insertDeleteDuration);
         activeWaiting(client::getCounterDelete, counterLimit);
 
         long end = System.nanoTime();
-        log.info("---------------------------------------------------------");
-        log.info("Webflux test is finished. Duration  (nanoseconds)=" + (end-start) + " ns");
-        log.info("Webflux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
-        log.info("---------------------------------------------------------");
+
         dataManager.printPostInfo();
+        dataManager.printPutInfo();
+        dataManager.printGetInfo();
+        dataManager.printDeleteInfo();
+
+        dataManager.printMeanInfo();
+
+        log.info("---------------------------------------------------------");
+        log.info("WebFlux test is finished. Duration (nanoseconds)=" + (end-start) + " ns");
+        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
+        log.info("---------------------------------------------------------");
     }
 
     private void activeWaiting(final Supplier<Integer> counter, final int limit) throws InterruptedException {
