@@ -39,7 +39,7 @@ public class MeterExecutor implements IMeterExecutor{
         client.postData(dataManager::insertPostDuration);
         activeWaiting( client::getCounterPost, counterLimit);
 
-        client.getAllData();
+        client.getAllData(dataManager::insertGetAllDuration);
         activeWaiting(client::getCounterGetAll, 1);
 
         client.putData(dataManager::insertPutDuration);
@@ -59,6 +59,8 @@ public class MeterExecutor implements IMeterExecutor{
         dataManager.printDeleteInfo();
 
         dataManager.printMeanInfo();
+
+        dataManager.printGetAllInfo();
 
         log.info("---------------------------------------------------------");
         log.info("WebFlux test is finished. Duration (nanoseconds)=" + (end-start) + " ns");

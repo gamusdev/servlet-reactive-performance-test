@@ -50,7 +50,7 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
     }
 
     @Override
-    public void getAllData() {
+    public void getAllData(Consumer<Long> consumer) {
         log.debug("---> GETALL");
         Flux<Data> dataFlux = client.get()
                 .uri(baseUri)
@@ -59,6 +59,7 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
                     if (response.statusCode().equals(HttpStatus.OK)) {
                         //TODO Adaptar DataManager para GetAll
                         //log.info("GETALL duration=" + response.headers().header("duration").get(0));
+                        consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                         return response.bodyToFlux(Data.class);
                     } else {
                         log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());

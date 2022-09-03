@@ -86,9 +86,12 @@ public class WebFluxClientMeterTest {
     @Test
     @Order(1)
     public void getAllData() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestOK();
-        client.getAllData();
+        client.getAllData(consumer);
         Thread.sleep(500);
 
         // Verify
@@ -97,6 +100,8 @@ public class WebFluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("GET", recordedRequest.getMethod());
         Assertions.assertEquals("/", recordedRequest.getPath());
+
+        Mockito.verify(consumer).accept(any());
     }
 
     @Test
@@ -186,9 +191,12 @@ public class WebFluxClientMeterTest {
     @Test
     @Order(6)
     public void getAllDataKO() throws InterruptedException, JsonProcessingException {
+        // When
+        Consumer consumer = Mockito.mock(Consumer.class);
+
         // Then
         prepareTestKO();
-        client.getAllData();
+        client.getAllData(consumer);
 
         Thread.sleep(500);
 
@@ -196,6 +204,9 @@ public class WebFluxClientMeterTest {
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         Assertions.assertEquals("GET", recordedRequest.getMethod());
         Assertions.assertEquals("/", recordedRequest.getPath());
+
+        // Assert that the consumer is not called
+        Mockito.verify(consumer, Mockito.times(0)).accept(any());
     }
 
     @Test

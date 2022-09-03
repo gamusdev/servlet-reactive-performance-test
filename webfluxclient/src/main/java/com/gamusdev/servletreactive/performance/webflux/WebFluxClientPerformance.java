@@ -35,7 +35,7 @@ public class WebFluxClientPerformance {
             Thread.sleep(100);
         }
 
-        client.getAllData();
+        client.getAllData(d -> log.info(d.toString()));
         while(client.getCounterGetAll() < 1) {
             Thread.sleep(100);
         }

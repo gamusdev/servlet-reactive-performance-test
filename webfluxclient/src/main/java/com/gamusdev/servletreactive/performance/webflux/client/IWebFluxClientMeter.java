@@ -3,7 +3,7 @@ package com.gamusdev.servletreactive.performance.webflux.client;
 import java.util.function.Consumer;
 
 public interface IWebFluxClientMeter {
-    void getAllData();
+    void getAllData(Consumer<Long> consumer);
     void getData(Consumer<Long> consumer);
     void postData(Consumer<Long> consumer);
     void putData(Consumer<Long> consumer);

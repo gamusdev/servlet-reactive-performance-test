@@ -18,36 +18,42 @@ public class DataManager implements IDataManager{
     private static int NS_TO_MS = 1_000_000;
 
     Map<HttpMethod, ArrayDeque<Long>> metrics;
+    long getAllDataDuration;
 
     DataManager() {
-        metrics = new ConcurrentHashMap();
-        metrics.put(HttpMethod.POST, new ArrayDeque());
-        metrics.put(HttpMethod.PUT, new ArrayDeque());
-        metrics.put(HttpMethod.GET, new ArrayDeque());
-        metrics.put(HttpMethod.DELETE, new ArrayDeque());
+        this.metrics = new ConcurrentHashMap();
+        this.metrics.put(HttpMethod.POST, new ArrayDeque());
+        this.metrics.put(HttpMethod.PUT, new ArrayDeque());
+        this.metrics.put(HttpMethod.GET, new ArrayDeque());
+        this.metrics.put(HttpMethod.DELETE, new ArrayDeque());
     }
 
-    synchronized private void insertDuration(HttpMethod httpMethod, Long duration) {
-        metrics.get(httpMethod).add(duration);
+    synchronized private void insertDuration(final HttpMethod httpMethod, final Long duration) {
+        this.metrics.get(httpMethod).add(duration);
     }
 
     @Override
-    public void insertPostDuration(Long duration) {
+    public void insertGetAllDuration(final Long duration){
+        this.getAllDataDuration = duration;
+    }
+
+    @Override
+    public void insertPostDuration(final Long duration) {
         metrics.get(HttpMethod.POST).add(duration);
     }
 
     @Override
-    public void insertPutDuration(Long duration){
+    public void insertPutDuration(final Long duration){
         metrics.get(HttpMethod.PUT).add(duration);
     }
 
     @Override
-    public void insertGetDuration(Long duration){
+    public void insertGetDuration(final Long duration){
         metrics.get(HttpMethod.GET).add(duration);
     }
 
     @Override
-    public void insertDeleteDuration(Long duration){
+    public void insertDeleteDuration(final Long duration){
         metrics.get(HttpMethod.DELETE).add(duration);
     }
 
@@ -72,8 +78,13 @@ public class DataManager implements IDataManager{
     }
 
     @Override
+    public void printGetAllInfo() {
+        log.info("----------------- Metrics: Get All data");
+        log.info("GET ALL " + TOTAL_DURATION + " (miliseconds):" + this.getAllDataDuration/NS_TO_MS + " ms");
+    }
+
+    @Override
     public void printMeanInfo() {
-        // TODO para 100 Posts, el contador desborda!
         log.info("----------------- Glocal Metrics:");
 
         long numRequests = metrics.values().stream().mapToLong(ArrayDeque::size).sum();
@@ -87,8 +98,7 @@ public class DataManager implements IDataManager{
         log.info(MEAN_DURATION + " (miliseconds):" + (totalDuration / numRequests) /NS_TO_MS + " ms");
     }
 
-    private void printInfo(HttpMethod method) {
-        // TODO para 100 Posts, el contador desborda!
+    private void printInfo(final HttpMethod method) {
         log.info("----------------- Metrics:" + method);
         ArrayDeque methodMetric = metrics.get( method );
         long numRequests = methodMetric.size();
