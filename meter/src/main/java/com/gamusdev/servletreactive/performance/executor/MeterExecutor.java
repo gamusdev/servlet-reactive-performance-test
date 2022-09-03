@@ -62,7 +62,7 @@ public class MeterExecutor implements IMeterExecutor{
 
         log.info("---------------------------------------------------------");
         log.info("WebFlux test is finished. Duration (nanoseconds)=" + (end-start) + " ns");
-        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000_000 + " seg");
+        log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000 + " ms");
         log.info("---------------------------------------------------------");
     }
 

@@ -60,6 +60,7 @@ public class WebFluxClientPerformance {
         //log.info("WebFlux test is finished. Duration=" + (end-start) + " ns");
         log.info("WebFlux test is finished. Duration=" + (end-start)/1_000_000 + " ms");
         log.info("---------------------------------------------------------");
+
     }
 
 }
