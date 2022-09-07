@@ -17,8 +17,8 @@ public class DataManager implements IDataManager{
     private static String MEAN_DURATION = "-> Mean duration of the requests";
     private static int NS_TO_MS = 1_000_000;
 
-    Map<HttpMethod, ArrayDeque<Long>> metrics;
-    long getAllDataDuration;
+    private Map<HttpMethod, ArrayDeque<Long>> metrics;
+    private long getAllDataDuration;
 
     DataManager() {
         this.metrics = new ConcurrentHashMap();

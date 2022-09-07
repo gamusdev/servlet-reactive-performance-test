@@ -14,6 +14,5 @@ public interface IDataManager {
     void printGetAllInfo();
     void printDeleteInfo();
 
-
     void printMeanInfo();
 }

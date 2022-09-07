@@ -1,7 +1,6 @@
 package com.gamusdev.servletreactive.performance;
 
 import com.gamusdev.servletreactive.performance.executor.IMeterExecutor;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
