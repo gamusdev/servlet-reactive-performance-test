@@ -14,5 +14,5 @@ servletreactive:
   webflux:
     host: "http://localhost:8090"
     base_uri: "/api/v1/performance/"
-    counter_limit: 100
+    counter_limit: 10
 

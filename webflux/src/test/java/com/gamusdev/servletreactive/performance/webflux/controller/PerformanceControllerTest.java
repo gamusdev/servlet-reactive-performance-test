@@ -1,6 +1,6 @@
 package com.gamusdev.servletreactive.performance.webflux.controller;
 
-import com.gamusdev.servletreactive.performance.webflux.WebfluxApplication;
+import com.gamusdev.servletreactive.performance.webflux.WebFluxApplication;
 import com.gamusdev.servletreactive.performance.webflux.exception.GenericErrorResponse;
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
 import com.gamusdev.servletreactive.performance.webflux.service.DataService;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
  */
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = PerformanceController.class)
-@ContextConfiguration(classes = WebfluxApplication.class)
+@ContextConfiguration(classes = WebFluxApplication.class)
 public class PerformanceControllerTest {
 
     private static final String BASE_URI = "/api/v1/performance/";
