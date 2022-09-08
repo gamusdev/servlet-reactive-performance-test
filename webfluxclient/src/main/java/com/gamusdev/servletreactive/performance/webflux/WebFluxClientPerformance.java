@@ -7,6 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * SpringBoot main class to execute the test
+ * It is written as example of use, but instead of this class, the package meter should be used.
+ * This class is not used in the execution of the performance test. It is just an example of use.
+ */
 @SpringBootApplication
 @Slf4j
 public class WebFluxClientPerformance {
@@ -17,6 +22,11 @@ public class WebFluxClientPerformance {
 
     private static final int counterLimit = 100;
 
+    /**
+     * Main class
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(WebFluxClientPerformance.class, args);
 
@@ -26,6 +36,11 @@ public class WebFluxClientPerformance {
         context.close();
     }
 
+    /**
+     * Example of execution
+     * @param client The IWebFluxClientMeter used
+     * @throws InterruptedException Exception
+     */
     private static void executeWebFluxClient(IWebFluxClientMeter client) throws InterruptedException {
         log.info("Starting WebFlux test...");
         long start = System.nanoTime();

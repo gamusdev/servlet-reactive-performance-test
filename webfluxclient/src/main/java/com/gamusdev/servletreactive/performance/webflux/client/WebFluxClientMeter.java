@@ -12,36 +12,72 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
-
+/**
+ * Implementation of the Interface IWebFluxClientMeter
+ * This implementation defines all the operations that the WebFlux client must have to get the metrics.
+ */
+// TODO Delete the duration header and return an enrich object, with duration on the body
+//TODO Quitar la header duration y ponerla como parametro en la api
 @Slf4j
-// TODO Add support to a MAP to collect all data results
-// TODO Or return a performance meter with all the times, and not only the body
-    // TODO Or return an enrich object, with body and headers
-
-    //TODO Quitar la header duration y ponerla como parametro en la api
 class WebFluxClientMeter implements IWebFluxClientMeter {
 
+    /**
+     * The instance itself.
+     * WebFluxClientMeter is a singleton
+     */
     private static WebFluxClientMeter instance;
 
+    /**
+     * WebClient
+     */
     private WebClient client;
+
+    /**
+     * The base URI
+     */
     private String baseUri;
+
+    /**
+     * Limit of messages received to stop the test
+     */
     private int counterLimit;
 
+    /**
+     * Counters
+     */
     private static final AtomicInteger counterGetAll = new AtomicInteger();
     private static final AtomicInteger counterGet = new AtomicInteger();
     private static final AtomicInteger counterPost = new AtomicInteger();
     private static final AtomicInteger counterPut = new AtomicInteger();
     private static final AtomicInteger counterDelete = new AtomicInteger();
 
+    /**
+     * Private constructor for this singleton without parameters.
+     * Not used.
+     */
     private WebFluxClientMeter() {
 
     }
+
+    /**
+     * Private constructor for this singleton with parameters.
+     * @param host The target host
+     * @param baseUri The base URI
+     * @param counterLimit The limit o messages received to stop the test
+     */
     private WebFluxClientMeter(final String host, final String baseUri, final int counterLimit) {
         this.client = WebClient.create( host );
         this.baseUri = baseUri;
         this.counterLimit = counterLimit;
     }
 
+    /**
+     * Factory method to get the instance
+     * @param host The target host
+     * @param baseUri The base URI
+     * @param counterLimit The limit o messages received to stop the test
+     * @return The WebFluxClientMeter instance
+     */
     static IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
         if (instance == null) {
             instance = new WebFluxClientMeter(host, baseUri, counterLimit);
@@ -49,57 +85,76 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
         return instance;
     }
 
+    /**
+     * Request to get all data.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void getAllData(Consumer<Long> consumer) {
-        log.debug("---> GETALL");
+        //Client Get with the baseUri to retrieve all the data
         Flux<Data> dataFlux = client.get()
                 .uri(baseUri)
                 .exchangeToFlux(response -> {
                     counterGetAll.incrementAndGet();
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        //TODO Adaptar DataManager para GetAll
-                        //log.info("GETALL duration=" + response.headers().header("duration").get(0));
+                        //If all goes fine!
+                        // Consume the metric duration header in the received consumer
+                        // TODO Note, this can be done also in the subscribe method. ¿Change it?
                         consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                         return response.bodyToFlux(Data.class);
                     } else {
+                        //If there is any error, raise exception!
                         log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
-                        throw new RuntimeException( "General error" );
+                        throw new RuntimeException( "General error. Status Code="+response.statusCode() );
                     }
                 });
                 /*.retrieve()
                 .bodyToFlux(Data.class);*/
-        //TODO Ver por que el resultado es {"id":null,"data":"oulZlDrieV"}, aunque mete la ID
+
+        // Subscribe to the Stream
+        // TODO The consumer can be use also here, as subscribe param. ¿Change it?
+        // TODO Ver por que el resultado es {"id":null,"data":"oulZlDrieV"}, aunque mete la ID
         dataFlux.subscribe(d -> log.debug("---> GETALL: id=" +d.getId()+" data=" + d.getData()));
-        log.debug("---> END GETALL");
     }
 
+    /**
+     * Request to get one record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void getData(Consumer<Long> consumer) {
-        log.debug("---> GET");
+        //Client Get with the baseUri + id to retrieve only one record
         IntStream.rangeClosed(1, counterLimit).forEach(i -> {
             Flux<Data> dataFlux = client.get()
                     .uri(baseUri + i)
                     .exchangeToFlux(response -> {
                         counterGet.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.OK)) {
-                            //log.info("GET duration=" + response.headers().header("duration").get(0));
+                            //If all goes fine!
+                            // Consume the metric duration header in the received consumer
                             consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToFlux(Data.class);
                         } else {
+                            //If there is any error, raise exception!
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
                             throw new RuntimeException( "General error" );
                         }
                     });
 
+            // Subscribe to the Stream
             dataFlux.subscribe(d -> log.debug("---> GET " + i + ": id=" +d.getId()+" data=" + d.getData()));
         });
-
-        log.debug("---> END GET");
     }
-
+    /**
+     * Request to post one new record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void postData(Consumer<Long> consumer) {
-        log.debug("---> POST");
+        //Client Post with the baseUri to create a new record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.post().uri(baseUri)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -110,26 +165,30 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
                     .exchangeToMono(response -> {
                         counterPost.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
-
-                            //String aux1 = response.headers().header("duration").get(0);
-                            //Integer aux2 = Integer.getInteger(response.headers().header("duration").get(0));
+                            //If all goes fine!
+                            // Consume the metric duration header in the received consumer
                             consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
-
-                            //log.info("POST duration=" + response.headers().header("duration").get(0));
                             return response.bodyToMono(Data.class);
                         } else {
+                            //If there is any error, raise exception!
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
                             throw new RuntimeException( "General error" );
                         }
                     });
+
+            // Subscribe to the Stream
             result.subscribe( d -> log.debug("---> POST id=" +d.getId()+" data=" + d.getData()));
         });
-        log.debug("---> END POST");
     }
 
+    /**
+     * Request to update one record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void putData(Consumer<Long> consumer) {
-        log.debug("---> PUT");
+        //Client Put with the baseUri + id to update the record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.put().uri(baseUri+ i)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -141,22 +200,30 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
                     .exchangeToMono(response -> {
                         counterPut.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.CREATED)) {
-                            //log.info("PUT duration=" + response.headers().header("duration").get(0));
+                            //If all goes fine!
+                            // Consume the metric duration header in the received consumer
                             consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToMono(Data.class);
                         } else {
+                            //If there is any error, raise exception!
                             log.error("Something weird happened. The test is broken. Status Code=" + response.statusCode());
                             throw new RuntimeException("General error");
                         }
                     });
+
+            // Subscribe to the Stream
             result.subscribe(d -> log.debug("---> PUT id=" + d.getId() + " data=" + d.getData()));
         });
-        log.debug("---> END PUT");
     }
 
+    /**
+     * Request to delete a record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void deleteData(Consumer<Long> consumer) {
-        log.debug("---> DELETE");
+        //Client Delete with the baseUri + id to delete the desired record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
             Mono<Data> result = client.delete()
                     .uri(baseUri + i)
@@ -164,34 +231,62 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
                     .exchangeToMono(response -> {
                         counterDelete.incrementAndGet();
                         if (response.statusCode().equals(HttpStatus.NO_CONTENT)) {
-                            //log.info("DELETE duration=" + response.headers().header("duration").get(0));
+                            //If all goes fine!
+                            // Consume the metric duration header in the received consumer
                             consumer.accept( Long.parseLong(response.headers().header("duration").get(0)));
                             return response.bodyToMono(Data.class);
                         } else {
+                            //If there is any error, raise exception!
                             log.error("Something weird happened. The test is broken. Status Code="+response.statusCode());
                             throw new RuntimeException( "General error" );
                         }
                     });
+
+            // Subscribe to the Stream
             result.subscribe();
         });
-        log.debug("---> END DELETE");
     }
+
+    /**
+     * Return the number of getAllData requests
+     * @return The counter
+     */
     @Override
     public int getCounterGetAll() {
         return counterGetAll.get();
     }
+
+    /**
+     * Return the number of getData requests
+     * @return The counter
+     */
     @Override
     public int getCounterGet() {
         return counterGet.get();
     }
+
+    /**
+     * Return the number of postData requests
+     * @return The counter
+     */
     @Override
     public int getCounterPost() {
         return counterPost.get();
     }
+
+    /**
+     * Return the number of putData requests
+     * @return The counter
+     */
     @Override
     public int getCounterPut() {
         return counterPut.get();
     }
+
+    /**
+     * Return the number of deleteData requests
+     * @return The counter
+     */
     @Override
     public int getCounterDelete() {
         return counterDelete.get();
