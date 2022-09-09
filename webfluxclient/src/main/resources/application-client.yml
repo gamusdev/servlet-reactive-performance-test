@@ -1,0 +1,11 @@
+spring:
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    io: INFO
+    reactor: INFO
+    org: INFO
+    com:
+      gamusdev: DEBUG
