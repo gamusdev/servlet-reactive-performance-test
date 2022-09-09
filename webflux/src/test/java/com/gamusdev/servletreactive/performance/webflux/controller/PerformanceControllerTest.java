@@ -122,7 +122,7 @@ public class PerformanceControllerTest {
     public void postData() {
         // When
         final Data data = Data.builder().data( RandomStringUtils.randomAlphanumeric(10)).id(RandomUtils.nextInt()).build();
-        Mockito.when(dataService.postData(any(String.class))).thenReturn(Mono.just(data));
+        Mockito.when(dataService.postData(any(Data.class))).thenReturn(Mono.just(data));
 
         // Then & Verify
         webClient.post().uri( BASE_URI )

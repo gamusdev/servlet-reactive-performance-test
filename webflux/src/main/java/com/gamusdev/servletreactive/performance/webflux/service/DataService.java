@@ -49,8 +49,8 @@ public class DataService implements IDataService {
      * @param input new data
      * @return saved data with created Id
      */
-    public Mono<Data> postData(final String input) {
-        return this.dataRepository.save( Data.builder().data(input).build() );
+    public Mono<Data> postData(final Data input) {
+        return this.dataRepository.save( Data.builder().data(input.getData()).build() );
     }
 
 

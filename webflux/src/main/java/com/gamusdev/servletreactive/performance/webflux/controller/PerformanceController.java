@@ -60,7 +60,7 @@ public class PerformanceController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Data>> postData(@RequestBody final String data) {
+    public Mono<ResponseEntity<Data>> postData(@RequestBody final Data data) {
         final long startNs = System.nanoTime();
         return this.dataService.postData(data)
                 .map(p-> ResponseEntity

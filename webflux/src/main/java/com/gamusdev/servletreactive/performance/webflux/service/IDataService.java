@@ -22,7 +22,7 @@ public interface IDataService {
      * @param data new data
      * @return saved data with created Id
      */
-    Mono<Data> postData(final String data);
+    Mono<Data> postData(final Data data);
 
     /**
      * Update a record by Id

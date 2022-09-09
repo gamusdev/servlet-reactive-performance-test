@@ -106,7 +106,7 @@ public class DataServiceTest {
         Mockito.when(dataRepository.save(any())).thenReturn(Mono.just(savedData));
 
         // Then
-        final Mono<Data> returnedData = dataService.postData(savedData.getData());
+        final Mono<Data> returnedData = dataService.postData(savedData);
 
         // Verify
         StepVerifier.create( returnedData.zipWith(returnedData) )
