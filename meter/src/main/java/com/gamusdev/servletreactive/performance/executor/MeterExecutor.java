@@ -37,6 +37,12 @@ public class MeterExecutor implements IMeterExecutor{
     private int counterLimit;
 
     /**
+     * Time between each request
+     */
+    @Value("${servletreactive.webflux.time_between_requests}")
+    private int timeBetweenRequests;
+
+    /**
      * Factory to get the MeterFactory
      */
     @Autowired
@@ -55,7 +61,7 @@ public class MeterExecutor implements IMeterExecutor{
     @Override
     public void execute() throws InterruptedException {
         // Get the client
-        IWebFluxClientMeter client = factory.getInstance(host, baseUri, counterLimit);
+        IWebFluxClientMeter client = factory.getInstance(host, baseUri, counterLimit, timeBetweenRequests);
         log.info("Starting WebFlux test...");
 
         // Get the starting time
@@ -110,5 +116,6 @@ public class MeterExecutor implements IMeterExecutor{
         while(counter.get() < limit) {
             Thread.sleep(100);
         }
+        log.info("Active waiting finished");
     }
 }

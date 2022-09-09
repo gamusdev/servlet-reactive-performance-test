@@ -20,7 +20,8 @@ public class WebFluxClientPerformance {
     private static final String BASE_URI = "/api/v1/performance/";
     private static final String WEB_FLUX_CLIENT_METER_FACTORY= "webfluxClientMeterFactory";
 
-    private static final int counterLimit = 100;
+    private static final int COUNTER_LIMIT = 100;
+    private static final int TIME_BETWEEN_REQUESTS = 1;
 
     /**
      * Main class
@@ -31,7 +32,7 @@ public class WebFluxClientPerformance {
         ConfigurableApplicationContext context = SpringApplication.run(WebFluxClientPerformance.class, args);
 
         IWebFluxClientMeterFactory factory = (IWebFluxClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
-        executeWebFluxClient(factory.getInstance(HOST, BASE_URI, counterLimit));
+        executeWebFluxClient(factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUESTS));
 
         context.close();
     }
@@ -46,7 +47,7 @@ public class WebFluxClientPerformance {
         long start = System.nanoTime();
 
         client.postData(d -> log.info(d.toString()));
-        while(client.getCounterPost() < counterLimit) {
+        while(client.getCounterPost() < COUNTER_LIMIT) {
             Thread.sleep(100);
         }
 
@@ -56,17 +57,17 @@ public class WebFluxClientPerformance {
         }
 
         client.putData(d -> log.info(d.toString()));
-        while(client.getCounterPut() < counterLimit) {
+        while(client.getCounterPut() < COUNTER_LIMIT) {
             Thread.sleep(100);
         }
 
         client.getData(d -> log.info(d.toString()));
-        while(client.getCounterGet() < counterLimit) {
+        while(client.getCounterGet() < COUNTER_LIMIT) {
             Thread.sleep(100);
         }
 
         client.deleteData(d -> log.info(d.toString()));
-        while(client.getCounterDelete() < counterLimit) {
+        while(client.getCounterDelete() < COUNTER_LIMIT) {
             Thread.sleep(100);
         }
 

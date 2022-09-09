@@ -18,6 +18,8 @@ public class WebFluxClientMeterFactoryTest {
 
     private static final int COUNTER_LIMIT = 0;
 
+    private static final int TIME_BETWEEN_REQUEST = 1;
+
     @Mock
     private IWebFluxClientMeter clientMeter;
 
@@ -30,10 +32,10 @@ public class WebFluxClientMeterFactoryTest {
         // Prepare static mocks
         try (MockedStatic<WebFluxClientMeter> utilities = Mockito.mockStatic(WebFluxClientMeter.class)) {
             // When
-            utilities.when(() -> WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT))
+            utilities.when(() -> WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST))
                     .thenReturn( clientMeter );
             // Then
-            IWebFluxClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
+            IWebFluxClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
 
             // Verify
             Assertions.assertThat(clientMeter).isEqualTo(result);

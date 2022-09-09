@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 // TODO Delete the duration header and return an enrich object, with duration on the body
 //TODO Quitar la header duration y ponerla como parametro en la api
 @Slf4j
-class WebFluxClientMeter implements IWebFluxClientMeter {
+class WebFluxClientMeter implements IWebFluxClientMeter { ;
 
     /**
      * The instance itself.
@@ -41,6 +41,10 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
      * Limit of messages received to stop the test
      */
     private int counterLimit;
+    /**
+     * Time between each request
+     */
+    private int timeBetweenRequests;
 
     /**
      * Counters
@@ -64,11 +68,14 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
      * @param host The target host
      * @param baseUri The base URI
      * @param counterLimit The limit o messages received to stop the test
+     * @param timeBetweenRequests Time between each request
      */
-    private WebFluxClientMeter(final String host, final String baseUri, final int counterLimit) {
+    private WebFluxClientMeter(final String host, final String baseUri, final int counterLimit,
+                               final int timeBetweenRequests) {
         this.client = WebClient.create( host );
         this.baseUri = baseUri;
         this.counterLimit = counterLimit;
+        this.timeBetweenRequests = timeBetweenRequests;
     }
 
     /**
@@ -76,11 +83,13 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
      * @param host The target host
      * @param baseUri The base URI
      * @param counterLimit The limit o messages received to stop the test
+     * @param timeBetweenRequests Time between each request
      * @return The WebFluxClientMeter instance
      */
-    static IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
+    static IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
+                                           final int timeBetweenRequests){
         if (instance == null) {
-            instance = new WebFluxClientMeter(host, baseUri, counterLimit);
+            instance = new WebFluxClientMeter(host, baseUri, counterLimit, timeBetweenRequests);
         }
         return instance;
     }
@@ -126,6 +135,9 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
     public void getData(Consumer<Long> consumer) {
         //Client Get with the baseUri + id to retrieve only one record
         IntStream.rangeClosed(1, counterLimit).forEach(i -> {
+
+            waitTimeBetweenRequests();
+
             Flux<Data> dataFlux = client.get()
                     .uri(baseUri + i)
                     .exchangeToFlux(response -> {
@@ -155,6 +167,9 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
     public void postData(Consumer<Long> consumer) {
         //Client Post with the baseUri to create a new record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
+
+            waitTimeBetweenRequests();
+
             Mono<Data> result = client.post().uri(baseUri)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -189,6 +204,9 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
     public void putData(Consumer<Long> consumer) {
         //Client Put with the baseUri + id to update the record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
+
+            waitTimeBetweenRequests();
+
             Mono<Data> result = client.put().uri(baseUri+ i)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -224,6 +242,9 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
     public void deleteData(Consumer<Long> consumer) {
         //Client Delete with the baseUri + id to delete the desired record
         IntStream.rangeClosed(1, counterLimit).forEach( i -> {
+
+            waitTimeBetweenRequests();
+
             Mono<Data> result = client.delete()
                     .uri(baseUri + i)
                     //.retrieve();
@@ -291,4 +312,14 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
         return counterDelete.get();
     }
 
+    /**
+     * Sleep the thread timeBetweenRequests ms
+     */
+    private void waitTimeBetweenRequests() {
+        try {
+            Thread.sleep(timeBetweenRequests);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

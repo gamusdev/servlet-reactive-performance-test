@@ -30,6 +30,8 @@ public class WebFluxClientMeterTest {
 
     private static final int COUNTER_LIMIT = 1;
 
+    private static final int TIME_BETWEEN_REQUEST = 1;
+
     private static MockWebServer mockBackEnd;
 
     private static IWebFluxClientMeter client;
@@ -43,7 +45,7 @@ public class WebFluxClientMeterTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         client = WebFluxClientMeter
-                .getInstance(HOST + ":" + port, BASE_URI, COUNTER_LIMIT);
+                .getInstance(HOST + ":" + port, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
     }
 
     @AfterAll
@@ -303,9 +305,9 @@ public class WebFluxClientMeterTest {
     @Test
     @Order(1000)
     public void getInstance() {
-        IWebFluxClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
-        IWebFluxClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT);
-        IWebFluxClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0);
+        IWebFluxClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IWebFluxClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IWebFluxClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0, 0);
 
         Assertions.assertTrue(client1 == client2);
         Assertions.assertTrue(client1 == client3);

@@ -16,10 +16,12 @@ public class WebFluxClientMeterFactory implements IWebFluxClientMeterFactory {
      * @param host The target host
      * @param baseUri The base URI
      * @param counterLimit The limit o messages received to stop the test
+     * @param timeBetweenRequests Time between each request
      * @return The WebFluxClientMeter instance
      */
     @Override
-    public IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit){
-        return WebFluxClientMeter.getInstance( host, baseUri, counterLimit );
+    public IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
+                                           final int timeBetweenRequests){
+        return WebFluxClientMeter.getInstance( host, baseUri, counterLimit, timeBetweenRequests);
     }
 }
