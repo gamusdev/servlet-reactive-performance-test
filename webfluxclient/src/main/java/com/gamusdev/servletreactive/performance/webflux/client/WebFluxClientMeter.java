@@ -114,7 +114,6 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
 
         // Subscribe to the Stream
         // TODO The consumer can be use also here, as subscribe param. ¿Change it?
-        // TODO Ver por que el resultado es {"id":null,"data":"oulZlDrieV"}, aunque mete la ID
         dataFlux.subscribe(d -> log.debug("---> GETALL: id=" +d.getId()+" data=" + d.getData()));
     }
 
