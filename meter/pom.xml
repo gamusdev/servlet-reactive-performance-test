@@ -11,7 +11,7 @@
 
 	<groupId>com.gamusdev.servletreactive.performance</groupId>
 	<artifactId>meter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>meter</name>
 	<description>Performance meter</description>
 	<properties>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.gamusdev.servletreactive.performance</groupId>
 			<artifactId>webfluxclient</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>
