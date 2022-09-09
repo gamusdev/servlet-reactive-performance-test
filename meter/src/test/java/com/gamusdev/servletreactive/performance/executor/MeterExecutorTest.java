@@ -42,7 +42,7 @@ public class MeterExecutorTest {
         Mockito.when(client.getCounterGet()).thenReturn(ONE);
         Mockito.when(client.getCounterDelete()).thenReturn(ONE);
 
-        Mockito.when( factory.getInstance(any(), any(), anyInt()) ).thenReturn(client);
+        Mockito.when( factory.getInstance(any(), any(), anyInt(), anyInt()) ).thenReturn(client);
 
         // Then
         meterExecutor.execute();
