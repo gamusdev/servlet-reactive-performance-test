@@ -80,3 +80,42 @@ The dataManager is passed as a Consumer to the clients, and saves all the inform
 An active waiting is implemented in each step of the test to maintain things easier.
 
 Finally, all the information is shown in the console.
+
+# Execution
+
+To execute the reactive server, you need to configure the environment variables, and then execute the jar file:
+```
+env server.port=8090 bash
+env spring.datasource.platform=h2 bash
+env spring.r2dbc.url="r2dbc:h2:mem:///gamusdev;DB_CLOSE_DELAY=-1" bash
+env  | grep port
+env  | grep spring
+
+java -jar target/webflux-0.0.1.jar
+```
+
+And the meter:
+```
+env logging.level.io=INFO bash
+env logging.level.reactor=INFO bash
+env logging.level.org=INFO bash
+env logging.level.com.gamusdev=INFO bash
+
+env servletreactive.webflux.host="http://{host}:8090" bash
+#env servletreactive.webflux.host="http://localhost:8090" bash
+env servletreactive.webflux.base_uri="/api/v1/performance/" bash
+
+# The test size parameters
+env servletreactive.webflux.counter_limit=1000 bash
+env servletreactive.webflux.time_between_requests=1 bash
+
+env  | grep logging
+env  | grep servletreactive
+
+java -jar target/meter-0.0.2.jar
+```
+
+## Author
+http://www.gamusdev.com
+
+dramirez@gamusdev.com
