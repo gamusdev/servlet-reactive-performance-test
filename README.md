@@ -23,7 +23,7 @@ Note: At this moment, only the Reactive projects are written.
 
 # WebFlux
 
-This is a simple CRUD WebFlux application.
+This is a simple CRUD WebFlux application. The Rest API follows the most common best practices.
 
 To maintain the test simple, an H2 database is used. This database is written in Java and loaded in memory.
 
@@ -55,3 +55,16 @@ curl -i http://localhost:8090/api/v1/performance/0
 ```
 curl -i http://localhost:8090/api/v1/performance/1 
 ```
+
+# WebFluxClient
+
+The client uses a Springboot WebClient. The WebClient is encapsulated in a WebFluxClientMeter. This WebFluxClientMeter
+is a Singleton obtained with the Factory pattern. It implements the IWebFluxClientMeter that defines the supported 
+operations, and encapsulates the counters to get the performance measure.
+
+Also, it supports as parameter a generic Consumer that could consume the responses. This consumer will be implemented 
+in the Meter project.
+
+The main method in this project is written as an example of use, and enables to use this project directly. 
+But in our test, the execution of the client will be done by the Meter application.
+
