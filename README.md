@@ -9,7 +9,8 @@ Typically, web servers using Servlets has a pool of (many) thread, and when thes
 On other hand, web servers that implement a reactive core has few threads. When these threads execute this calls
 to external systems, the threads are released and can manage other requests.
 
-The purpose of this project is to test this, with a small reactive application VS the same application written with Servlets.
+The purpose of this project is to test this concept, with a simple and small reactive application VS the same application 
+written with Servlets.
 
 This project will have:
 1) A WebFlux application and a Servlet application.
@@ -68,3 +69,14 @@ in the Meter project.
 The main method in this project is written as an example of use, and enables to use this project directly. 
 But in our test, the execution of the client will be done by the Meter application.
 
+# Meter
+
+The Meter project is the one that will execute the clients and capture the measured results.
+Basically, it is a big map implemented in DataManager and an executor (MeterExecutor), that executes the calls to the 
+Rest Api using the clients.
+
+The dataManager is passed as a Consumer to the clients, and saves all the information from the responses.
+
+An active waiting is implemented in each step of the test to maintain things easier.
+
+Finally, all the information is shown in the console.

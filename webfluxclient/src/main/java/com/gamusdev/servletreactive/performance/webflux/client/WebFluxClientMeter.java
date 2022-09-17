@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
  * This implementation defines all the operations that the WebFlux client must have to get the metrics.
  */
 @Slf4j
-class WebFluxClientMeter implements IWebFluxClientMeter { 
+class WebFluxClientMeter implements IWebFluxClientMeter {
 
     /**
      * The instance itself.
