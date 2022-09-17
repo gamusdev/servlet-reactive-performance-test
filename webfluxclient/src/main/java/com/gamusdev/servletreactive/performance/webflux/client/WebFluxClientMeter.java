@@ -16,10 +16,8 @@ import java.util.stream.IntStream;
  * Implementation of the Interface IWebFluxClientMeter
  * This implementation defines all the operations that the WebFlux client must have to get the metrics.
  */
-// TODO Delete the duration header and return an enrich object, with duration on the body
-//TODO Quitar la header duration y ponerla como parametro en la api
 @Slf4j
-class WebFluxClientMeter implements IWebFluxClientMeter { ;
+class WebFluxClientMeter implements IWebFluxClientMeter {
 
     /**
      * The instance itself.
