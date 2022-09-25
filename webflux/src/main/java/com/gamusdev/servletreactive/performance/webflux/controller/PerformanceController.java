@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -151,8 +152,8 @@ public class PerformanceController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteById(@PathVariable final Integer id) {
         final long startNs = System.nanoTime();
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add(DURATION, (System.nanoTime() - startNs) + "");
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap(
+                Map.of(DURATION, List.of((System.nanoTime() - startNs) + "")));
         return dataService.delete(id)
                 .then(Mono.just(new ResponseEntity<>(headers, HttpStatus.NO_CONTENT)));
     }

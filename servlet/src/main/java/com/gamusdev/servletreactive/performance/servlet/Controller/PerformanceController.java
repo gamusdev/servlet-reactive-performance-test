@@ -4,12 +4,16 @@ import com.gamusdev.servletreactive.performance.servlet.model.Data;
 import com.gamusdev.servletreactive.performance.servlet.service.DataService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/performance")
@@ -109,8 +113,6 @@ public class PerformanceController {
      * @param data the new data
      * @return Mono<ResponseEntity<Page>>  with the updated data
      */
-    // TODO OJO: Digo que devuelvo 404, pero ni en Servlets ni en Webflux lo devuelvo nunca,
-    // PQ si no existe, se crea
     @PutMapping("/{id}")
     public ResponseEntity<Data> updateById(
             @PathVariable Integer id, @RequestBody final Data data) {
@@ -121,6 +123,33 @@ public class PerformanceController {
                         .header(DURATION, (System.nanoTime() - startNs) + "")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(result);
+    }
+
+    /**
+     * DELETE / must always return 404 NOT FOUND.
+     * Note Best practices: Also, the DELETE / also could delete all the collection
+     * @return Mono<ResponseEntity<Void>> with 404 NOT FOUND
+     */
+    @DeleteMapping
+    public ResponseEntity<Void> delete() {
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Delete /{id} Deletes de data. Returns always 204 NO CONTENT.
+     * The duration is returned on a header called "duration".
+     * Note: Rest best practices returns 404 if not found, but repository.deleteById returns Mono<Void>
+     *     So, it is needed to search before delete. This step is skipped, because it is an idempotent op.
+     * @param id identifier to delete
+     * @return ResponseEntity<Void>>
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable final Integer id) {
+        final long startNs = System.nanoTime();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap(
+                Map.of(DURATION, List.of((System.nanoTime() - startNs) + "")));
+        dataService.delete(id);
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
 }
