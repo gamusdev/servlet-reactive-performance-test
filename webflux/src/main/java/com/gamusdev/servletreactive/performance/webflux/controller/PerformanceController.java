@@ -36,6 +36,11 @@ public class PerformanceController {
     @Autowired
     PerformanceController(DataService pDataService) { this.dataService = pDataService; }
 
+    /**
+     * Get all the data.
+     * The duration is returned on a header called "duration"
+     * @return All the data with the duration header
+     */
     @GetMapping
     public Mono<ResponseEntity<Flux<Data>>> getAllData() {
         final long startNs = System.nanoTime();
@@ -48,6 +53,12 @@ public class PerformanceController {
         );
     }
 
+    /**
+     * Get the data by identifier, or 404 if not fount.
+     * The duration is returned on a header called "duration".
+     * @param id identifier
+     * @return The data by id with the duration header
+     */
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Mono<Data>>> getDataById(@PathVariable final Integer id) {
         final long startNs = System.nanoTime();
@@ -59,6 +70,12 @@ public class PerformanceController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Save a new record.
+     * The duration is returned on a header called "duration".
+     * @param data New data.
+     * @return the saved data with the duration.
+     */
     @PostMapping
     public Mono<ResponseEntity<Data>> postData(@RequestBody final Data data) {
         final long startNs = System.nanoTime();
@@ -72,7 +89,7 @@ public class PerformanceController {
     }
 
     /**
-     * POST /{id} must always return 404 NOT FOUND
+     * POST /{id} must always return 404 NOT FOUND,
      * @param data The data
      * @return Mono<ResponseEntity<Page>> Not found
      */
@@ -82,7 +99,7 @@ public class PerformanceController {
     }
 
     /**
-     * PUT /pages must always return 404 NOT FOUND
+     * PUT /pages must always return 404 NOT FOUND,
      * Note Best practices: Also, the PUT /Pages also could modify all the collection
      * @param data The data
      * @return Mono<ResponseEntity<Page>> Not found
@@ -93,7 +110,8 @@ public class PerformanceController {
     }
 
     /**
-     * PUT /{id} returns 200 if modified, 404 if not found
+     * PUT /{id} returns 200 if modified, 404 if not found.
+     * The duration is returned on a header called "duration".
      * @param id the id to modify
      * @param data the new data
      * @return Mono<ResponseEntity<Page>>  with the updated data
@@ -113,7 +131,7 @@ public class PerformanceController {
     }
 
     /**
-     * DELETE / must always return 404 NOT FOUND
+     * DELETE / must always return 404 NOT FOUND.
      * Note Best practices: Also, the DELETE / also could delete all the collection
      * @return Mono<ResponseEntity<Void>> with 404 NOT FOUND
      */
@@ -123,7 +141,8 @@ public class PerformanceController {
     }
 
     /**
-     * Delete /{id} Deletes de data. Returns always 204 NO CONTENT
+     * Delete /{id} Deletes de data. Returns always 204 NO CONTENT.
+     * The duration is returned on a header called "duration".
      * Note: Rest best practices returns 404 if not found, but repository.deleteById returns Mono<Void>
      *     So, it is needed to search before delete. This step is skipped, because it is an idempotent op.
      * @param id identifier to delete

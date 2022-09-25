@@ -1,12 +1,14 @@
-package com.gamusdev.servletreactive.performance.webflux.service;
+package com.gamusdev.servletreactive.performance.servlet.service;
 
-import com.gamusdev.servletreactive.performance.webflux.model.Data;
-import com.gamusdev.servletreactive.performance.webflux.repository.DataRepository;
+import com.gamusdev.servletreactive.performance.servlet.model.Data;
+import com.gamusdev.servletreactive.performance.servlet.repository.DataRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Data Business Service
@@ -30,14 +32,14 @@ public class DataService implements IDataService {
      * Return all data records.
      * @return All records
      */
-    public Flux<Data> getAllData() {
-        return this.dataRepository.findAll();
+    public List<Data> getAllData() {
+        return (List<Data>) this.dataRepository.findAll();
     }
 
     /**
      * Return data by Id
      */
-    public Mono<Data> getDataById(final Integer id) {
+    public Optional<Data> getDataById(final Integer id) {
         return this.dataRepository.findById(id);
     }
 
@@ -46,7 +48,7 @@ public class DataService implements IDataService {
      * @param input new data
      * @return saved data with created Id
      */
-    public Mono<Data> postData(final Data input) {
+    public Data postData(final Data input) {
         return this.dataRepository.save( Data.builder().data(input.getData()).build() );
     }
 
@@ -58,14 +60,13 @@ public class DataService implements IDataService {
      * @param newData data to update
      * @return the updated page
      */
-    public Mono<Data> updateById(final Integer id, final Data newData ) {
-        return dataRepository.findById(id)
-                .flatMap(old -> dataRepository.save(
-                        Data.builder()
-                                .id(old.getId())
-                                .data(newData.getData())
-                                .build()
-                ));
+    public Data updateById(final Integer id, final Data newData ) {
+        return dataRepository.save(
+                Data.builder()
+                        .id(dataRepository.findById(id).get().getId())
+                        .data(newData.getData())
+                        .build()
+        );
     }
 
     /**
@@ -73,7 +74,7 @@ public class DataService implements IDataService {
      * @param id key
      * @return Void
      */
-    public Mono<Void> delete(final Integer id) {
-        return dataRepository.deleteById(id);
+    public void delete(@PathVariable final Integer id) {
+        dataRepository.deleteById(id);
     }
 }
