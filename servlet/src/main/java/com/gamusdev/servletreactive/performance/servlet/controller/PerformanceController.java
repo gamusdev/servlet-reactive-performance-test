@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.servlet.Controller;
+package com.gamusdev.servletreactive.performance.servlet.controller;
 
 import com.gamusdev.servletreactive.performance.servlet.model.Data;
 import com.gamusdev.servletreactive.performance.servlet.service.DataService;
