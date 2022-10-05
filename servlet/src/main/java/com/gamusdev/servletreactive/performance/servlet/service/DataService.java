@@ -52,8 +52,6 @@ public class DataService implements IDataService {
         return this.dataRepository.save( Data.builder().data(input.getData()).build() );
     }
 
-
-
     /**
      * Update a record by Id
      * @param id key
