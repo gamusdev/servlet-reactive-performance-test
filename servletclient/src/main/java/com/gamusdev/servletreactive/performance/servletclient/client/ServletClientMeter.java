@@ -4,6 +4,7 @@ import com.gamusdev.servletreactive.performance.servletclient.model.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -111,17 +112,20 @@ public class ServletClientMeter implements IServletClientMeter{
     @Override
     public void getAllData(Consumer<Long> consumer) {
 
-        //Client Get with the host & baseUri to retrieve all the data
-        ResponseEntity<Data[]> response = client.getForEntity(url , Data[].class);
         counterGetAll.incrementAndGet();
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            //If all goes fine!
-            // Consume the metric duration header in the received consumer
-            consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
-        } else {
+
+        try {
+            //Client Get with the host & baseUri to retrieve all the data
+            ResponseEntity<Data[]> response = client.getForEntity(url, Data[].class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                //If all goes fine!
+                // Consume the metric duration header in the received consumer
+                consumer.accept(Long.parseLong(response.getHeaders().get("duration").get(0)));
+            }
+        } catch (HttpStatusCodeException ex) {
             //If there is any error, raise exception!
-            log.error("Something weird happened. The test is broken. Status Code="+response.getStatusCode());
-            throw new RuntimeException( "General error. Status Code="+response.getStatusCode() );
+            log.error("Something weird happened. The test is broken. Status Code=" + ex.getRawStatusCode());
+            throw new RuntimeException( "General error. Status Code=" + ex.getRawStatusCode() );
         }
     }
 
@@ -137,19 +141,22 @@ public class ServletClientMeter implements IServletClientMeter{
 
             waitTimeBetweenRequests();
 
-            //Client Get with the host & baseUri to retrieve all the data
-            ResponseEntity<Data> response = client.getForEntity(url + i , Data.class);
-
             counterGet.incrementAndGet();
 
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                //If all goes fine!
-                // Consume the metric duration header in the received consumer
-                consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
-            } else {
+            try{
+                //Client Get with the host & baseUri to retrieve all the data
+                ResponseEntity<Data> response = client.getForEntity(url + i , Data.class);
+
+                if (response.getStatusCode().equals(HttpStatus.OK)) {
+                    //If all goes fine!
+                    // Consume the metric duration header in the received consumer
+                    consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
+                }
+
+            } catch (HttpStatusCodeException ex) {
                 //If there is any error, raise exception!
-                log.error("Something weird happened. The test is broken. Status Code="+response.getStatusCode());
-                throw new RuntimeException( "General error" );
+                log.error("Something weird happened. The test is broken. Status Code=" + ex.getRawStatusCode());
+                throw new RuntimeException( "General error. Status Code=" + ex.getRawStatusCode() );
             }
         });
     }
@@ -170,18 +177,21 @@ public class ServletClientMeter implements IServletClientMeter{
             HttpEntity<Data> request = new HttpEntity<>(Data.builder().data(
                     RandomStringUtils.randomAlphanumeric(10)
             ).build());
-            ResponseEntity<Data> response = client.postForEntity(url, request, Data.class);
 
             counterPost.incrementAndGet();
 
-            if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-                //If all goes fine!
-                // Consume the metric duration header in the received consumer
-                consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
-            } else {
+            try{
+                ResponseEntity<Data> response = client.postForEntity(url, request, Data.class);
+
+                if (response.getStatusCode().equals(HttpStatus.CREATED)) {
+                    //If all goes fine!
+                    // Consume the metric duration header in the received consumer
+                    consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
+                }
+            } catch (HttpStatusCodeException ex) {
                 //If there is any error, raise exception!
-                log.error("Something weird happened. The test is broken. Status Code="+response.getStatusCode());
-                throw new RuntimeException( "General error" );
+                log.error("Something weird happened. The test is broken. Status Code=" + ex.getRawStatusCode());
+                throw new RuntimeException( "General error. Status Code=" + ex.getRawStatusCode() );
             }
         });
     }
@@ -202,18 +212,21 @@ public class ServletClientMeter implements IServletClientMeter{
             HttpEntity<Data> request = new HttpEntity<>(Data.builder().data(
                     RandomStringUtils.randomAlphanumeric(10)
             ).build());
-            ResponseEntity<Data> response = client.exchange(url + i, HttpMethod.PUT, request, Data.class);
 
             counterPut.incrementAndGet();
 
-            if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-                //If all goes fine!
-                // Consume the metric duration header in the received consumer
-                consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
-            } else {
+            try{
+                ResponseEntity<Data> response = client.exchange(url + i, HttpMethod.PUT, request, Data.class);
+
+                if (response.getStatusCode().equals(HttpStatus.CREATED)) {
+                    //If all goes fine!
+                    // Consume the metric duration header in the received consumer
+                    consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
+                }
+            } catch (HttpStatusCodeException ex) {
                 //If there is any error, raise exception!
-                log.error("Something weird happened. The test is broken. Status Code=" + response.getStatusCode());
-                throw new RuntimeException("General error");
+                log.error("Something weird happened. The test is broken. Status Code=" + ex.getRawStatusCode());
+                throw new RuntimeException( "General error. Status Code=" + ex.getRawStatusCode() );
             }
         });
 
@@ -232,18 +245,20 @@ public class ServletClientMeter implements IServletClientMeter{
 
             waitTimeBetweenRequests();
 
-            ResponseEntity<Void> response = client.exchange(url + i, HttpMethod.DELETE, null, Void.class);
-
             counterDelete.incrementAndGet();
 
-            if (response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-                //If all goes fine!
-                // Consume the metric duration header in the received consumer
-                consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
-            } else {
+            try{
+                ResponseEntity<Void> response = client.exchange(url + i, HttpMethod.DELETE, null, Void.class);
+
+                if (response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
+                    //If all goes fine!
+                    // Consume the metric duration header in the received consumer
+                    consumer.accept( Long.parseLong(response.getHeaders().get("duration").get(0)));
+                }
+            } catch (HttpStatusCodeException ex) {
                 //If there is any error, raise exception!
-                log.error("Something weird happened. The test is broken. Status Code="+response.getStatusCode());
-                throw new RuntimeException( "General error" );
+                log.error("Something weird happened. The test is broken. Status Code=" + ex.getRawStatusCode());
+                throw new RuntimeException( "General error. Status Code=" + ex.getRawStatusCode() );
             }
         });
     }
