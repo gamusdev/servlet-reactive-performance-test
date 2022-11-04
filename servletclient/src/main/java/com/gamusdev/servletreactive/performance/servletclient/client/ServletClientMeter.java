@@ -125,6 +125,11 @@ public class ServletClientMeter implements IServletClientMeter{
         }
     }
 
+    /**
+     * Request to get one record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void getData(Consumer<Long> consumer) {
         //Client Get with the baseUri + id to retrieve only one record
@@ -181,6 +186,11 @@ public class ServletClientMeter implements IServletClientMeter{
         });
     }
 
+    /**
+     * Request to update one record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void putData(Consumer<Long> consumer) {
 
@@ -209,6 +219,11 @@ public class ServletClientMeter implements IServletClientMeter{
 
     }
 
+    /**
+     * Request to delete a record.
+     * The metric received from the response (duration header) is passed to the consumer.
+     * @param consumer Generic consumer to parse the response
+     */
     @Override
     public void deleteData(Consumer<Long> consumer) {
 
