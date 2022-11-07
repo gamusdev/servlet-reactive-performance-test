@@ -1,8 +1,8 @@
-package com.gamusdev.servletreactive.performance.executor;
+package com.gamusdev.servletreactive.performance.meter.executor;
 
-import com.gamusdev.servletreactive.performance.client.ClientMeterFactory;
+import com.gamusdev.servletreactive.performance.meter.client.ClientMeterFactory;
+import com.gamusdev.servletreactive.performance.meter.data.DataManager;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
-import com.gamusdev.servletreactive.performance.data.DataManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

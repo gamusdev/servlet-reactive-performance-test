@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.executor;
+package com.gamusdev.servletreactive.performance.meter.executor;
 
 /**
  * IMeterExecutor interface

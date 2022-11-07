@@ -1,6 +1,6 @@
-package com.gamusdev.servletreactive.performance;
+package com.gamusdev.servletreactive.performance.meter;
 
-import com.gamusdev.servletreactive.performance.executor.IMeterExecutor;
+import com.gamusdev.servletreactive.performance.meter.executor.IMeterExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;

@@ -1,8 +1,9 @@
 package com.gamusdev.servletreactive.performance.executor;
 
+import com.gamusdev.servletreactive.performance.meter.executor.MeterExecutor;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
-import com.gamusdev.servletreactive.performance.data.DataManager;
+import com.gamusdev.servletreactive.performance.meter.data.DataManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

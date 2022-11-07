@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.data;
+package com.gamusdev.servletreactive.performance.meter.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
