@@ -1,5 +1,6 @@
 package com.gamusdev.servletreactive.performance.servletclient.client;
 
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ public class ServletClientMeterFactoryTest {
             utilities.when(() -> ServletClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST))
                     .thenReturn( clientMeter );
             // Then
-            IServletClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+            IClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
 
             // Verify
             Assertions.assertThat(clientMeter).isEqualTo(result);

@@ -36,8 +36,20 @@
 
 		<dependency>
 			<groupId>com.gamusdev.servletreactive.performance</groupId>
+			<artifactId>servletclient</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.gamusdev.servletreactive.performance</groupId>
 			<artifactId>webfluxclient</artifactId>
 			<version>0.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.gamusdev.servletreactive.performance</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>

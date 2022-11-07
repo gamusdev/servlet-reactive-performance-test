@@ -1,5 +1,7 @@
 package com.gamusdev.servletreactive.performance.servletclient.client;
 
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class ServletClientMeterFactory implements IServletClientMeterFactory{
+public class ServletClientMeterFactory implements IClientMeterFactory {
     /**
      * Factory method to provide IServletClientMeter instances
      * @param host The target host
@@ -19,8 +21,8 @@ public class ServletClientMeterFactory implements IServletClientMeterFactory{
      * @return The WebFluxClientMeter instance
      */
     @Override
-    public IServletClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
-                                           final int timeBetweenRequests){
+    public IClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
+                                    final int timeBetweenRequests){
         return ServletClientMeter.getInstance( host, baseUri, counterLimit, timeBetweenRequests);
     }
 }

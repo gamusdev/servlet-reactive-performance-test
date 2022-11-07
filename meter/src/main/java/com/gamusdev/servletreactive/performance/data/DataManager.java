@@ -20,7 +20,7 @@ public class DataManager implements IDataManager{
     private Map<HttpMethod, ArrayDeque<Long>> metrics;
     private long getAllDataDuration;
 
-    DataManager() {
+    public DataManager() {
         this.metrics = new ConcurrentHashMap();
         this.metrics.put(HttpMethod.POST, new ArrayDeque());
         this.metrics.put(HttpMethod.PUT, new ArrayDeque());

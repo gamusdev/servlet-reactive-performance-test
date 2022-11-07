@@ -1,8 +1,8 @@
 package com.gamusdev.servletreactive.performance.executor;
 
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import com.gamusdev.servletreactive.performance.data.DataManager;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -18,13 +18,13 @@ public class MeterExecutorTest {
     private final static Integer ONE = 1;
 
     @Mock
-    private IWebFluxClientMeterFactory factory;
+    private IClientMeterFactory factory;
 
     @Mock
     private DataManager dataManager;
 
     @Mock
-    private IWebFluxClientMeter client;
+    private IClientMeter client;
 
     //@Captor
     //ArgumentCaptor<Consumer> consumerCaptor;

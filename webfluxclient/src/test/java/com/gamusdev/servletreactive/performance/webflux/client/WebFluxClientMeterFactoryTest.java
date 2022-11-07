@@ -1,5 +1,6 @@
 package com.gamusdev.servletreactive.performance.webflux.client;
 
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,7 @@ public class WebFluxClientMeterFactoryTest {
     private static final int TIME_BETWEEN_REQUEST = 1;
 
     @Mock
-    private IWebFluxClientMeter clientMeter;
+    private IClientMeter clientMeter;
 
     @InjectMocks
     private WebFluxClientMeterFactory factory;
@@ -35,7 +36,7 @@ public class WebFluxClientMeterFactoryTest {
             utilities.when(() -> WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST))
                     .thenReturn( clientMeter );
             // Then
-            IWebFluxClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+            IClientMeter result = factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
 
             // Verify
             Assertions.assertThat(clientMeter).isEqualTo(result);
