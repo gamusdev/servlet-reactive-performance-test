@@ -1,7 +1,7 @@
 package com.gamusdev.servletreactive.performance.webflux;
 
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,7 +31,7 @@ public class WebFluxClientPerformance {
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(WebFluxClientPerformance.class, args);
 
-        IWebFluxClientMeterFactory factory = (IWebFluxClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
+        IClientMeterFactory factory = (IClientMeterFactory)context.getBean(WEB_FLUX_CLIENT_METER_FACTORY);
         executeWebFluxClient(factory.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUESTS));
 
         context.close();
@@ -42,7 +42,7 @@ public class WebFluxClientPerformance {
      * @param client The IWebFluxClientMeter used
      * @throws InterruptedException Exception
      */
-    private static void executeWebFluxClient(IWebFluxClientMeter client) throws InterruptedException {
+    private static void executeWebFluxClient(IClientMeter client) throws InterruptedException {
         log.info("Starting WebFlux test...");
         long start = System.nanoTime();
 

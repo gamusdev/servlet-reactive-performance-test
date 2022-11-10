@@ -1,7 +1,6 @@
 package com.gamusdev.servletreactive.performance.webflux.service;
 
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
-import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,5 +36,5 @@ public interface IDataService {
      * @param id key
      * @return Void
      */
-    Mono<Void> delete(@PathVariable Integer id);
+    Mono<Void> delete(Integer id);
 }
