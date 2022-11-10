@@ -11,7 +11,7 @@
 
 	<groupId>com.gamusdev.servletreactive.performance</groupId>
 	<artifactId>meter</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>meter</name>
 	<description>Performance meter</description>
 	<properties>
