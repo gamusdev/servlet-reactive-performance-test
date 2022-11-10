@@ -17,11 +17,6 @@ This project will have:
 2) A WebClient and a RestTemplate client.
 3) A Meter project, that will use the clients to measure the requests.
 
----
-Note: At this moment, only the Reactive projects are written.
----
----
-
 # WebFlux
 
 This is a simple CRUD WebFlux application. The Rest API follows the most common best practices.
@@ -57,17 +52,31 @@ curl -i http://localhost:8090/api/v1/performance/0
 curl -i http://localhost:8090/api/v1/performance/1 
 ```
 
-# WebFluxClient
+# WebFlux Client
 
-The client uses a Springboot WebClient. The WebClient is encapsulated in a WebFluxClientMeter. This WebFluxClientMeter
-is a Singleton obtained with the Factory pattern. It implements the IWebFluxClientMeter that defines the supported 
-operations, and encapsulates the counters to get the performance measure.
+The client uses a Springboot WebClient. The WebClient is encapsulated in the WebFluxClientMeter class. 
+This WebFluxClientMeter is a Singleton obtained with the Factory pattern. 
+The IWebFluxClientMeter defines the supported 
+operations, and encapsulates the counters to get the performance measure for the Reactive test.
 
 Also, it supports as parameter a generic Consumer that could consume the responses. This consumer will be implemented 
 in the Meter project.
 
 The main method in this project is written as an example of use, and enables to use this project directly. 
 But in our test, the execution of the client will be done by the Meter application.
+
+# Servlet
+
+It is a CRUD similar to the WebFlux version. The Rest API also follows the most common best practices.
+
+# Servlet Client
+
+This client is a RestTemplate wrapped in the ServletClientMeter class (it is also another Singleton obtained with the 
+Factory pattern).
+Again, the ServletClientMeter defines the supported
+operations, and encapsulates the counters to get the performance measure for the Servlet test.
+
+And finally, it also supports the generic Consumer, used in the Meter project.
 
 # Meter
 
@@ -81,7 +90,12 @@ An active waiting is implemented in each step of the test to maintain things eas
 
 Finally, all the information is shown in the console.
 
-# Execution
+As note, the GeneralClientMeterFactory is the class that manages the client type created (Servlet or WebFlux). This
+class follows the SOLID principles, and uses the factory methods of the clients to create the required client 
+(in a lazy mode, only the requested client is created).
+
+
+# Execution for the WebFlux test
 
 To execute the reactive server, you need to configure the environment variables, and then execute the jar file:
 ```
@@ -101,18 +115,60 @@ env logging.level.reactor=INFO bash
 env logging.level.org=INFO bash
 env logging.level.com.gamusdev=INFO bash
 
-env servletreactive.webflux.host="http://{host}:8090" bash
-#env servletreactive.webflux.host="http://localhost:8090" bash
-env servletreactive.webflux.base_uri="/api/v1/performance/" bash
+# Do not start the embedded server
+env spring.main.web-application-type="none"
+
+env servletreactive.clientType="webFlux"
+env servletreactive.host="http://{host}:8090" bash
+#env servletreactive.host="http://localhost:8090" bash
+env servletreactive.base_uri="/api/v1/performance/" bash
 
 # The test size parameters
-env servletreactive.webflux.counter_limit=1000 bash
-env servletreactive.webflux.time_between_requests=1 bash
+env servletreactive.counter_limit=1000 bash
+env servletreactive.time_between_requests=1 bash
 
 env  | grep logging
 env  | grep servletreactive
 
-java -jar target/meter-0.0.2.jar
+java -jar target/meter-0.0.3.jar
+```
+
+# Execution for the Servlet test
+
+To execute the reactive server, you need to configure the environment variables, and then execute the jar file:
+```
+env server.port=8090 bash
+env spring.datasource.platform=h2 bash
+env spring.r2dbc.url="r2dbc:h2:mem:///gamusdev;DB_CLOSE_DELAY=-1" bash
+env  | grep port
+env  | grep spring
+
+java -jar target/webflux-0.0.1.jar
+```
+
+And the meter:
+```
+env logging.level.io=INFO bash
+env logging.level.reactor=INFO bash
+env logging.level.org=INFO bash
+env logging.level.com.gamusdev=INFO bash
+
+# Do not start the embedded server
+env spring.main.web-application-type="none"
+
+env servletreactive.clientType="servlet"
+env servletreactive.host="http://{host}:8090" bash
+#env servletreactive.host="http://localhost:8090" bash
+env servletreactive.base_uri="/api/v1/performance/" bash
+
+# The test size parameters
+env servletreactive.counter_limit=1000 bash
+env servletreactive.time_between_requests=1 bash
+
+env  | grep logging
+env  | grep servletreactive
+
+java -jar target/meter-0.0.3.jar
 ```
 
 ## Author
