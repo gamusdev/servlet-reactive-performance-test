@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.gamusdev.servletreactive.performance</groupId>
 	<artifactId>servletclient</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>servletclient</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -38,6 +38,13 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>com.gamusdev.servletreactive.performance</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -89,6 +96,24 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+				<!-- https://stackoverflow.com/questions/40089443/how-to-add-a-dependency-to-a-spring-boot-jar-in-another-project-->
+				<!-- repackage is necessary to be able to use this jar as dependency in other projects-->
+				<executions>
+					<execution>
+						<id>repackage</id>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.data;
+package com.gamusdev.servletreactive.performance.meter.data;
 
 public interface IDataManager {
 

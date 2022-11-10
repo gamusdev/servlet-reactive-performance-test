@@ -1,8 +1,8 @@
-package com.gamusdev.servletreactive.performance.executor;
+package com.gamusdev.servletreactive.performance.meter.executor;
 
-import com.gamusdev.servletreactive.performance.data.DataManager;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.IWebFluxClientMeterFactory;
+import com.gamusdev.servletreactive.performance.meter.client.IGeneralClientMeterFactory;
+import com.gamusdev.servletreactive.performance.meter.data.DataManager;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,34 +19,16 @@ import java.util.function.Supplier;
 public class MeterExecutor implements IMeterExecutor{
 
     /**
-     * Host
-     */
-    @Value("${servletreactive.webflux.host}")
-    private String host;
-
-    /**
-     * The base URI
-     */
-    @Value("${servletreactive.webflux.base_uri}")
-    private String baseUri;
-
-    /**
      * Limit of messages received to stop the test
      */
-    @Value("${servletreactive.webflux.counter_limit}")
+    @Value("${servletreactive.counter_limit}")
     private int counterLimit;
-
-    /**
-     * Time between each request
-     */
-    @Value("${servletreactive.webflux.time_between_requests}")
-    private int timeBetweenRequests;
 
     /**
      * Factory to get the MeterFactory
      */
     @Autowired
-    private IWebFluxClientMeterFactory factory;
+    private IGeneralClientMeterFactory factory;
 
     /**
      * DataManager
@@ -61,8 +43,8 @@ public class MeterExecutor implements IMeterExecutor{
     @Override
     public void execute() throws InterruptedException {
         // Get the client
-        IWebFluxClientMeter client = factory.getInstance(host, baseUri, counterLimit, timeBetweenRequests);
-        log.info("Starting WebFlux test...");
+        IClientMeter client = factory.getInstance();
+        log.info("Starting test...");
 
         // Get the starting time
         long start = System.nanoTime();

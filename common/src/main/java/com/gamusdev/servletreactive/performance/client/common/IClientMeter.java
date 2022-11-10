@@ -1,13 +1,15 @@
-package com.gamusdev.servletreactive.performance.servletclient.client;
+package com.gamusdev.servletreactive.performance.client.common;
+
 
 import java.util.function.Consumer;
 
 /**
- * Interface IServletClientMeter
- * This interface defines all the operations that the RestTemplate client must have to get the metrics.
+ * Interface IClientMeter
+ * This interface defines all the operations that the client must have to get the metrics.
  * The Api Rest methods contain a Consumer<Long> where the returned metric should be passed.
  */
-public interface IServletClientMeter {
+public interface IClientMeter {
+
 
     /**
      * Request to get all data

@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance;
+package com.gamusdev.servletreactive.performance.meter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

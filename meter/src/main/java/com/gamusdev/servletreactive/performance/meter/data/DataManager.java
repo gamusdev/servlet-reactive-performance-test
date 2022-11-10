@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.data;
+package com.gamusdev.servletreactive.performance.meter.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -20,16 +20,12 @@ public class DataManager implements IDataManager{
     private Map<HttpMethod, ArrayDeque<Long>> metrics;
     private long getAllDataDuration;
 
-    DataManager() {
+    public DataManager() {
         this.metrics = new ConcurrentHashMap();
         this.metrics.put(HttpMethod.POST, new ArrayDeque());
         this.metrics.put(HttpMethod.PUT, new ArrayDeque());
         this.metrics.put(HttpMethod.GET, new ArrayDeque());
         this.metrics.put(HttpMethod.DELETE, new ArrayDeque());
-    }
-
-    synchronized private void insertDuration(final HttpMethod httpMethod, final Long duration) {
-        this.metrics.get(httpMethod).add(duration);
     }
 
     @Override

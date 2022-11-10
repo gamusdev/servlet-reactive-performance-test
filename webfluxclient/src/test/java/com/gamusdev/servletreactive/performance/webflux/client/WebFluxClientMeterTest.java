@@ -2,6 +2,7 @@ package com.gamusdev.servletreactive.performance.webflux.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -34,7 +35,7 @@ public class WebFluxClientMeterTest {
 
     private static MockWebServer mockBackEnd;
 
-    private static IWebFluxClientMeter client;
+    private static IClientMeter client;
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -305,9 +306,9 @@ public class WebFluxClientMeterTest {
     @Test
     @Order(1000)
     public void getInstance() {
-        IWebFluxClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
-        IWebFluxClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
-        IWebFluxClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0, 0);
+        IClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0, 0);
 
         Assertions.assertTrue(client1 == client2);
         Assertions.assertTrue(client1 == client3);
