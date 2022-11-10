@@ -15,4 +15,6 @@ public interface IClientMeterFactory {
      */
     IClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
                              final int timeBetweenRequests);
+
+    ClientType getClientType();
 }

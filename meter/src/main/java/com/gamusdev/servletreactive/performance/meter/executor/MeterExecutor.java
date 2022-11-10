@@ -1,6 +1,6 @@
 package com.gamusdev.servletreactive.performance.meter.executor;
 
-import com.gamusdev.servletreactive.performance.meter.client.ClientMeterFactory;
+import com.gamusdev.servletreactive.performance.meter.client.IGeneralClientMeterFactory;
 import com.gamusdev.servletreactive.performance.meter.data.DataManager;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,35 +18,17 @@ import java.util.function.Supplier;
 @Slf4j
 public class MeterExecutor implements IMeterExecutor{
 
-//    /**
-//     * Host
-//     */
-//    @Value("${servletreactive.host}")
-//    private String host;
-//
-//    /**
-//     * The base URI
-//     */
-//    @Value("${servletreactive.base_uri}")
-//    private String baseUri;
-
     /**
      * Limit of messages received to stop the test
      */
     @Value("${servletreactive.counter_limit}")
     private int counterLimit;
 
-//    /**
-//     * Time between each request
-//     */
-//    @Value("${servletreactive.time_between_requests}")
-//    private int timeBetweenRequests;
-
     /**
      * Factory to get the MeterFactory
      */
     @Autowired
-    private ClientMeterFactory factory;
+    private IGeneralClientMeterFactory factory;
 
     /**
      * DataManager

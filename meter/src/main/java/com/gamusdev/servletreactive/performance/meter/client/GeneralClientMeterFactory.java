@@ -1,14 +1,16 @@
 package com.gamusdev.servletreactive.performance.meter.client;
 
-
+import com.gamusdev.servletreactive.performance.client.common.ClientType;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
-import com.gamusdev.servletreactive.performance.servletclient.client.ServletClientMeter;
-import com.gamusdev.servletreactive.performance.webflux.client.WebFluxClientMeter;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -18,7 +20,7 @@ import java.util.function.Supplier;
  */
 @Service
 @Slf4j
-public class ClientMeterFactory {
+public class GeneralClientMeterFactory implements IGeneralClientMeterFactory{
 
     /**
      * Host
@@ -50,29 +52,44 @@ public class ClientMeterFactory {
     @Value("${servletreactive.clientType}")
     private String clientType;
 
-    final Supplier<IClientMeter> webFluxSupplier = () ->
-            WebFluxClientMeter.getInstance( host, baseUri, counterLimit, timeBetweenRequests);
+    /**
+     * Map with all the implementations of the factories
+     */
+    final Map<ClientType, Supplier<IClientMeter>> generator;
 
-    final Supplier<IClientMeter> ServletSupplier = () ->
-            ServletClientMeter.getInstance( host, baseUri, counterLimit, timeBetweenRequests);
+    /**
+     * List of IClientMeter Factories
+     */
+    private List<IClientMeterFactory> factories;
 
-    private enum typeEnum {
-        WEBFLUX, SERVLET;
-    };
-
-    final Map<typeEnum, Supplier<IClientMeter>> generator = Map.ofEntries(
-            Map.entry(typeEnum.WEBFLUX, webFluxSupplier),
-            Map.entry(typeEnum.SERVLET, ServletSupplier)
-    );
-
+    /**
+     * Constructor
+     * This constructor configures the factories property with all the enabled
+     * factories.
+     * With these factories the load of the Client Meters is lazy loaded, only is
+     * loaded when needed.
+     * @param factories The list of all the IClientMeterFactory factories
+     */
+    @Autowired
+    public GeneralClientMeterFactory(List<IClientMeterFactory> factories)    {
+        generator = new HashMap<>();
+        this.factories = factories;
+        for(IClientMeterFactory factory: factories){
+            generator.put(
+                factory.getClientType(),
+                () -> factory.getInstance( host, baseUri, counterLimit, timeBetweenRequests)
+            );
+        }
+    }
 
     /**
      * Factory method to provide IServletClientMeter instances
      * @return The WebFluxClientMeter instance
      */
+    @Override
     public IClientMeter getInstance(){
-        if (EnumUtils.isValidEnumIgnoreCase(typeEnum.class, clientType)) {
-            return generator.get(typeEnum.valueOf(clientType)).get();
+        if (EnumUtils.isValidEnumIgnoreCase(ClientType.class, clientType)) {
+            return generator.get(ClientType.valueOf(clientType.toUpperCase())).get();
         }
         else{
             throw new RuntimeException("Invalid servletreactive.clientType configuration. Valid values: {webFlux, servlet} ");

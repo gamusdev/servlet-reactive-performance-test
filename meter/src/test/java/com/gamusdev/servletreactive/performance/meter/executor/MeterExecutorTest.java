@@ -1,8 +1,7 @@
-package com.gamusdev.servletreactive.performance.executor;
+package com.gamusdev.servletreactive.performance.meter.executor;
 
-import com.gamusdev.servletreactive.performance.meter.executor.MeterExecutor;
+import com.gamusdev.servletreactive.performance.meter.client.GeneralClientMeterFactory;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
-import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import com.gamusdev.servletreactive.performance.meter.data.DataManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 
 @ExtendWith(SpringExtension.class)
 public class MeterExecutorTest {
@@ -19,7 +17,7 @@ public class MeterExecutorTest {
     private final static Integer ONE = 1;
 
     @Mock
-    private IClientMeterFactory factory;
+    private GeneralClientMeterFactory factory;
 
     @Mock
     private DataManager dataManager;
@@ -43,7 +41,8 @@ public class MeterExecutorTest {
         Mockito.when(client.getCounterGet()).thenReturn(ONE);
         Mockito.when(client.getCounterDelete()).thenReturn(ONE);
 
-        Mockito.when( factory.getInstance(any(), any(), anyInt(), anyInt()) ).thenReturn(client);
+        //Mockito.when( factory.getInstance(any(), any(), anyInt(), anyInt()) ).thenReturn(client);
+        Mockito.when( factory.getInstance() ).thenReturn(client);
 
         // Then
         meterExecutor.execute();

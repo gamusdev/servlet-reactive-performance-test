@@ -1,5 +1,6 @@
 package com.gamusdev.servletreactive.performance.servletclient.client;
 
+import com.gamusdev.servletreactive.performance.client.common.ClientType;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import com.gamusdev.servletreactive.performance.client.common.IClientMeterFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ServletClientMeterFactory implements IClientMeterFactory {
+
+    /**
+     * The type of client factory
+     */
+    public static final ClientType TYPE = ClientType.WEBFLUX;
+
+    public ClientType getClientType(){
+        return TYPE;
+    }
+
     /**
      * Factory method to provide IServletClientMeter instances
      * @param host The target host

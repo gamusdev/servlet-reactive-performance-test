@@ -1,4 +1,4 @@
-package com.gamusdev.servletreactive.performance.data;
+package com.gamusdev.servletreactive.performance.meter.data;
 
 import com.gamusdev.servletreactive.performance.meter.data.DataManager;
 import org.junit.jupiter.api.Assertions;

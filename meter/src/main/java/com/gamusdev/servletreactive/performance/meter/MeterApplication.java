@@ -8,7 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * SpringBoot main class to execute the test
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.gamusdev.servletreactive.performance")
 public class MeterApplication {
 
 	private static final String METER_EXECUTOR= "meterExecutor";
