@@ -2,6 +2,7 @@ package com.gamusdev.servletreactive.performance.webflux.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -34,7 +35,7 @@ public class WebFluxClientMeterTest {
 
     private static MockWebServer mockBackEnd;
 
-    private static IWebFluxClientMeter client;
+    private static IClientMeter client;
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -150,7 +151,7 @@ public class WebFluxClientMeterTest {
 
     @Test
     @Order(4)
-    public void postPut() throws InterruptedException, JsonProcessingException {
+    public void putData() throws InterruptedException, JsonProcessingException {
         // When
         Consumer consumer = Mockito.mock(Consumer.class);
 
@@ -171,7 +172,7 @@ public class WebFluxClientMeterTest {
 
     @Test
     @Order(5)
-    public void postDelete() throws InterruptedException, JsonProcessingException {
+    public void deleteData() throws InterruptedException, JsonProcessingException {
         // When
         Consumer consumer = Mockito.mock(Consumer.class);
 
@@ -257,7 +258,7 @@ public class WebFluxClientMeterTest {
 
     @Test
     @Order(9)
-    public void postPutKO() throws InterruptedException, JsonProcessingException {
+    public void putDataKO() throws InterruptedException, JsonProcessingException {
         // When
         Consumer consumer = Mockito.mock(Consumer.class);
 
@@ -279,7 +280,7 @@ public class WebFluxClientMeterTest {
 
     @Test
     @Order(10)
-    public void postDeleteKO() throws InterruptedException, JsonProcessingException {
+    public void deleteDataKO() throws InterruptedException, JsonProcessingException {
         // When
         Consumer consumer = Mockito.mock(Consumer.class);
 
@@ -305,9 +306,9 @@ public class WebFluxClientMeterTest {
     @Test
     @Order(1000)
     public void getInstance() {
-        IWebFluxClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
-        IWebFluxClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
-        IWebFluxClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0, 0);
+        IClientMeter client1 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IClientMeter client2 = WebFluxClientMeter.getInstance(HOST, BASE_URI, COUNTER_LIMIT, TIME_BETWEEN_REQUEST);
+        IClientMeter client3 = WebFluxClientMeter.getInstance("HOST", "BASE_URI", 0, 0);
 
         Assertions.assertTrue(client1 == client2);
         Assertions.assertTrue(client1 == client3);

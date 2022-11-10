@@ -6,7 +6,7 @@ calls will be lower with the Reactive stack, but it can handle more request with
 Typically, web servers using Servlets has a pool of (many) thread, and when these threads execute calls to external systems 
 (another api, a database access...), the threads wait for the responses.
 
-On other hand, web servers that implement a reactive core has few threads. When these threads execute this calls
+On other hand, web servers that implement a reactive core have few threads. When these threads execute this calls
 to external systems, the threads are released and can manage other requests.
 
 The purpose of this project is to test this concept, with a simple and small reactive application VS the same application 
@@ -30,7 +30,7 @@ To maintain the test simple, an H2 database is used. This database is written in
 
 The project uses Spring Data to access to the database.
 
-# To tests controller:
+# To tests the controller:
 
 To test easily the application, you can use curl:
 

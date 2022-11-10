@@ -1,0 +1,28 @@
+spring:
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    io: INFO
+    reactor: INFO
+    org: INFO
+    com:
+      gamusdev: INFO
+
+servletreactive:
+  clientType: "webFlux"
+  #clientType: "servlet"
+  host: "http://localhost:8090"
+  base_uri: "/api/v1/performance/"
+  #Test 1 - OK
+  counter_limit: 1000
+  time_between_requests: 1
+
+  #Test 2 - KO
+  #counter_limit: 2000
+  #time_between_requests: 1
+
+  #Test 3 -OK
+  #counter_limit: 3000
+  #time_between_requests: 2

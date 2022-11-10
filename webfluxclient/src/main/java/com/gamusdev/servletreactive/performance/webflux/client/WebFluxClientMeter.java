@@ -1,5 +1,6 @@
 package com.gamusdev.servletreactive.performance.webflux.client;
 
+import com.gamusdev.servletreactive.performance.client.common.IClientMeter;
 import com.gamusdev.servletreactive.performance.webflux.model.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,7 +18,7 @@ import java.util.stream.IntStream;
  * This implementation defines all the operations that the WebFlux client must have to get the metrics.
  */
 @Slf4j
-class WebFluxClientMeter implements IWebFluxClientMeter {
+public class WebFluxClientMeter implements IClientMeter {
 
     /**
      * The instance itself.
@@ -84,7 +85,7 @@ class WebFluxClientMeter implements IWebFluxClientMeter {
      * @param timeBetweenRequests Time between each request
      * @return The WebFluxClientMeter instance
      */
-    static IWebFluxClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
+    public static IClientMeter getInstance(final String host, final String baseUri, final int counterLimit,
                                            final int timeBetweenRequests){
         if (instance == null) {
             instance = new WebFluxClientMeter(host, baseUri, counterLimit, timeBetweenRequests);

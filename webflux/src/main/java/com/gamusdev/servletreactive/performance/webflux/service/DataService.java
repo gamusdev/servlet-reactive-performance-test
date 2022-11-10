@@ -5,11 +5,8 @@ import com.gamusdev.servletreactive.performance.webflux.repository.DataRepositor
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Data Business Service
@@ -76,7 +73,7 @@ public class DataService implements IDataService {
      * @param id key
      * @return Void
      */
-    public Mono<Void> delete(@PathVariable final Integer id) {
+    public Mono<Void> delete(final Integer id) {
         return dataRepository.deleteById(id);
     }
 }
