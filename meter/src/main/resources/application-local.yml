@@ -11,8 +11,8 @@ logging:
       gamusdev: INFO
 
 servletreactive:
-  clientType: "webFlux"
-  #clientType: "servlet"
+  #clientType: "webFlux"
+  clientType: "servlet"
   host: "http://localhost:8090"
   base_uri: "/api/v1/performance/"
   #Test 1 - OK

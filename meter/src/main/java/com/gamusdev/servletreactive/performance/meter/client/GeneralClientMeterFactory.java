@@ -89,6 +89,7 @@ public class GeneralClientMeterFactory implements IGeneralClientMeterFactory{
     @Override
     public IClientMeter getInstance(){
         if (EnumUtils.isValidEnumIgnoreCase(ClientType.class, clientType)) {
+            log.info("Obtaining meter: {}", clientType.toUpperCase());
             return generator.get(ClientType.valueOf(clientType.toUpperCase())).get();
         }
         else{

@@ -28,10 +28,6 @@ public class DataManager implements IDataManager{
         this.metrics.put(HttpMethod.DELETE, new ArrayDeque());
     }
 
-    synchronized private void insertDuration(final HttpMethod httpMethod, final Long duration) {
-        this.metrics.get(httpMethod).add(duration);
-    }
-
     @Override
     public void insertGetAllDuration(final Long duration){
         this.getAllDataDuration = duration;

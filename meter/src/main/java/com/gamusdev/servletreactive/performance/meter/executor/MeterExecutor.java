@@ -44,7 +44,7 @@ public class MeterExecutor implements IMeterExecutor{
     public void execute() throws InterruptedException {
         // Get the client
         IClientMeter client = factory.getInstance();
-        log.info("Starting WebFlux test...");
+        log.info("Starting test...");
 
         // Get the starting time
         long start = System.nanoTime();
