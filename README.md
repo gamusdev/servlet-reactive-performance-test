@@ -25,7 +25,50 @@ To maintain the test simple, an H2 database is used. This database is written in
 
 The project uses Spring Data to access to the database.
 
-# To tests the controller:
+# WebFlux Client
+
+The client uses a Springboot WebClient. The WebClient is encapsulated in the WebFluxClientMeter class. 
+This WebFluxClientMeter is a Singleton obtained with the Factory pattern. 
+The IWebFluxClientMeter defines the supported 
+operations, and encapsulates the counters to get the performance measure for the Reactive test.
+
+Also, it supports as parameter a generic Consumer that could consume the responses. This consumer will be implemented 
+in the Meter project.
+
+The main method in this project is written as an example of use, and enables to use this project directly. 
+But in our test, the execution of the client will be done by the Meter application.
+
+# Servlet
+
+It is a CRUD similar to the WebFlux version. The Rest API also follows the most common best practices.
+It also uses and H2 embedded database.
+
+# Servlet Client
+
+This client is a RestTemplate wrapped in the ServletClientMeter class (it is also another Singleton obtained with the 
+Factory pattern).
+Again, the ServletClientMeter defines the supported Rest
+operations, and encapsulates the counters to get the performance measure for the Servlet test.
+
+And finally, it also supports the generic Consumer, used in the Meter project.
+
+# Meter
+
+The Meter project is the one that will execute the clients and capture the measured results.
+Basically, it is a big map implemented in DataManager and an executor (MeterExecutor), that executes the calls to the 
+Rest Api using the clients.
+
+The dataManager is passed as a Consumer to the clients, and saves all the information from the responses.
+
+An active waiting is implemented in each step of the test to maintain things easier.
+
+Finally, all the information is shown in the console.
+
+As note, the GeneralClientMeterFactory is the class that manages the client created (Servlet or WebFlux). This
+class follows the <b>SOLID principles</b>, and uses the factory methods of the clients to create the required client 
+(in a <b>lazy mode</b>, only the requested client is created).
+
+# To tests the controllers:
 
 To test easily the application, you can use curl:
 
@@ -51,48 +94,6 @@ curl -i http://localhost:8090/api/v1/performance/0
 ```
 curl -i http://localhost:8090/api/v1/performance/1 
 ```
-
-# WebFlux Client
-
-The client uses a Springboot WebClient. The WebClient is encapsulated in the WebFluxClientMeter class. 
-This WebFluxClientMeter is a Singleton obtained with the Factory pattern. 
-The IWebFluxClientMeter defines the supported 
-operations, and encapsulates the counters to get the performance measure for the Reactive test.
-
-Also, it supports as parameter a generic Consumer that could consume the responses. This consumer will be implemented 
-in the Meter project.
-
-The main method in this project is written as an example of use, and enables to use this project directly. 
-But in our test, the execution of the client will be done by the Meter application.
-
-# Servlet
-
-It is a CRUD similar to the WebFlux version. The Rest API also follows the most common best practices.
-
-# Servlet Client
-
-This client is a RestTemplate wrapped in the ServletClientMeter class (it is also another Singleton obtained with the 
-Factory pattern).
-Again, the ServletClientMeter defines the supported
-operations, and encapsulates the counters to get the performance measure for the Servlet test.
-
-And finally, it also supports the generic Consumer, used in the Meter project.
-
-# Meter
-
-The Meter project is the one that will execute the clients and capture the measured results.
-Basically, it is a big map implemented in DataManager and an executor (MeterExecutor), that executes the calls to the 
-Rest Api using the clients.
-
-The dataManager is passed as a Consumer to the clients, and saves all the information from the responses.
-
-An active waiting is implemented in each step of the test to maintain things easier.
-
-Finally, all the information is shown in the console.
-
-As note, the GeneralClientMeterFactory is the class that manages the client type created (Servlet or WebFlux). This
-class follows the SOLID principles, and uses the factory methods of the clients to create the required client 
-(in a lazy mode, only the requested client is created).
 
 
 # Execution for the WebFlux test
